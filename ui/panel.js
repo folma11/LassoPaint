@@ -23,6 +23,12 @@
       const newLayerCheckbox = document.getElementById('newLayerCheckbox');
       const deselectCheckbox = document.getElementById('deselectCheckbox');
       const allowFillWithoutSelectionCheckbox = document.getElementById('allowFillWithoutSelectionCheckbox');
+      const quickCommandButtons = [
+        document.getElementById('quickFillButton'),
+        document.getElementById('quickFillDeselectButton'),
+        document.getElementById('quickNewLayerFillButton'),
+        document.getElementById('quickNewLayerFillDeselectButton')
+      ].filter(Boolean);
 
       if (newLayerCheckbox) {
         newLayerCheckbox.checked = readStorageBoolean('lassopaint.newLayerBeforeFill', false);
@@ -48,49 +54,68 @@
         });
       }
 
+      function getCurrentFillOptions() {
+        return {
+          newLayer: newLayerCheckbox ? Boolean(newLayerCheckbox.checked) : false,
+          deselect: deselectCheckbox ? Boolean(deselectCheckbox.checked) : false
+        };
+      }
+
+      async function runCommandAction(commandName, buttonElement, fallbackLabel) {
+        if (!appContext || !appContext.photoshop || typeof appContext.photoshop.runCommand !== 'function') {
+          PanelUI.setStatus('Photoshop bridge is not ready.', true);
+          console.error('[LassoPaint] Photoshop bridge is unavailable.');
+          return;
+        }
+
+        const allowFillWithoutSelection = allowFillWithoutSelectionCheckbox ? Boolean(allowFillWithoutSelectionCheckbox.checked) : false;
+        if (!allowFillWithoutSelection) {
+          PanelUI.setStatus("Fill requires an active selection. Enable 'Allow fill without selection' to override.", true);
+          console.warn('[LassoPaint] Fill requires an active selection.');
+          return;
+        }
+
+        const options = getCurrentFillOptions();
+        const label = fallbackLabel || buttonElement && buttonElement.textContent ? buttonElement.textContent : commandName;
+        PanelUI.setStatus(`${label} running...`, false);
+        if (buttonElement) {
+          buttonElement.disabled = true;
+        }
+
+        try {
+          const result = await appContext.photoshop.runCommand(commandName, options);
+          if (result && result.success) {
+            PanelUI.setStatus(result.message || `${label} completed.`, false);
+            console.info(`[LassoPaint] ${label} completed.`);
+          } else {
+            const message = result && result.message ? result.message : `${label} failed.`;
+            PanelUI.setStatus(message, true);
+            console.error(`[LassoPaint] ${label} failed.`, result);
+          }
+        } catch (error) {
+          PanelUI.setStatus(`${label} failed.`, true);
+          console.error(`[LassoPaint] ${label} failed.`, error);
+        } finally {
+          if (buttonElement) {
+            buttonElement.disabled = false;
+          }
+        }
+      }
+
       if (runFillButton) {
         runFillButton.addEventListener('click', async () => {
           console.info('[LassoPaint] Run Fill button clicked.');
-
-          if (!appContext || !appContext.photoshop || typeof appContext.photoshop.runConfiguredFill !== 'function') {
-            PanelUI.setStatus('Photoshop bridge is not ready.', true);
-            console.error('[LassoPaint] Photoshop bridge is unavailable.');
-            return;
-          }
-
-          const allowFillWithoutSelection = allowFillWithoutSelectionCheckbox ? Boolean(allowFillWithoutSelectionCheckbox.checked) : false;
-          if (!allowFillWithoutSelection) {
-            PanelUI.setStatus("Fill requires an active selection. Enable 'Allow fill without selection' to override.", true);
-            console.warn('[LassoPaint] Fill requires an active selection.');
-            return;
-          }
-
-          const options = {
-            newLayer: newLayerCheckbox ? Boolean(newLayerCheckbox.checked) : false,
-            deselect: deselectCheckbox ? Boolean(deselectCheckbox.checked) : false
-          };
-
-          PanelUI.setStatus('Running fill workflow...', false);
-          runFillButton.disabled = true;
-
-          try {
-            const result = await appContext.photoshop.runConfiguredFill(options);
-            if (result && result.success) {
-              PanelUI.setStatus(result.message || 'Fill workflow completed.', false);
-              console.info('[LassoPaint] Fill workflow completed.');
-            } else {
-              const message = result && result.message ? result.message : 'Fill workflow failed.';
-              PanelUI.setStatus(message, true);
-              console.error('[LassoPaint] Fill workflow failed.', result);
-            }
-          } catch (error) {
-            PanelUI.setStatus('Fill workflow failed.', true);
-            console.error('[LassoPaint] Fill workflow failed.', error);
-          } finally {
-            runFillButton.disabled = false;
-          }
+          await runCommandAction('runFill', runFillButton, 'Run Fill');
         });
       }
+
+      quickCommandButtons.forEach((button) => {
+        button.addEventListener('click', async () => {
+          const commandName = button.getAttribute('data-command');
+          console.info(`[LassoPaint] Quick command clicked: ${commandName}`);
+          await runCommandAction(commandName, button, button.textContent || commandName);
+        });
+      });
 
       const advancedButtons = [
         document.getElementById('fillSelectionButton'),

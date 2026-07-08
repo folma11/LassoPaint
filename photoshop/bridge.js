@@ -123,12 +123,30 @@
     return { success: true, message: 'Selection watcher is not running.' };
   }
 
+  const commandRegistry = {
+    runFill: (options) => runConfiguredFill(options),
+    fill: () => fillSelectionWithForegroundColor(),
+    fillDeselect: () => fillSelectionAndDeselect(),
+    newLayerFill: () => newLayerAndFill(),
+    newLayerFillDeselect: () => newLayerAndFillAndDeselect()
+  };
+
+  async function runCommand(commandName, options) {
+    const handler = commandRegistry[commandName];
+    if (!handler) {
+      return { success: false, message: `Unknown command: ${commandName}` };
+    }
+
+    return handler(options);
+  }
+
   const PhotoshopBridge = {
     runConfiguredFill,
     fillSelectionWithForegroundColor,
     fillSelectionAndDeselect,
     newLayerAndFill,
     newLayerAndFillAndDeselect,
+    runCommand,
     startEventDiagnostics,
     stopEventDiagnostics,
     startSelectionWatcher,

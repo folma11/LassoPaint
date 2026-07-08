@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.8.0 - 2026-07-08
+
+- Added a new Quick Commands section with compact buttons for Fill, Fill+Deselect, NewLayer+Fill, and NewLayer+Fill+Deselect.
+- Routed the quick commands through a reusable internal command registry so they share the same execution path as Run Fill.
+- Kept the existing Run Fill workflow, New Layer before fill, Deselect after fill, Allow fill without selection, and disabled Selection Watcher behavior intact.
+
 ## 0.7.0 - 2026-07-08
 
 - Added an opt-in "Allow fill without selection" checkbox with localStorage persistence.
