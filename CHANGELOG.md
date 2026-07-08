@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.7.0 - 2026-07-08
+
+- Added an opt-in "Allow fill without selection" checkbox with localStorage persistence.
+- Made Run Fill block by default unless the user explicitly enables the override.
+- Kept New Layer before fill, Deselect after fill, and the disabled Selection Watcher behavior intact.
+
 ## 0.6.3 - 2026-07-08
 
 - Rolled back the experimental selection-check logic so Run Fill again uses the safe v0.5.0-style fill workflow without calling any selection-check BatchPlay command.

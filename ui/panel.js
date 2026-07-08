@@ -22,6 +22,7 @@
       const runFillButton = document.getElementById('runFillButton');
       const newLayerCheckbox = document.getElementById('newLayerCheckbox');
       const deselectCheckbox = document.getElementById('deselectCheckbox');
+      const allowFillWithoutSelectionCheckbox = document.getElementById('allowFillWithoutSelectionCheckbox');
 
       if (newLayerCheckbox) {
         newLayerCheckbox.checked = readStorageBoolean('lassopaint.newLayerBeforeFill', false);
@@ -39,6 +40,14 @@
         });
       }
 
+      if (allowFillWithoutSelectionCheckbox) {
+        allowFillWithoutSelectionCheckbox.checked = readStorageBoolean('lassopaint.allowFillWithoutSelection', false);
+        allowFillWithoutSelectionCheckbox.addEventListener('change', (event) => {
+          writeStorageBoolean('lassopaint.allowFillWithoutSelection', Boolean(event.target.checked));
+          console.info('[LassoPaint] Allow fill without selection setting saved.', event.target.checked);
+        });
+      }
+
       if (runFillButton) {
         runFillButton.addEventListener('click', async () => {
           console.info('[LassoPaint] Run Fill button clicked.');
@@ -46,6 +55,13 @@
           if (!appContext || !appContext.photoshop || typeof appContext.photoshop.runConfiguredFill !== 'function') {
             PanelUI.setStatus('Photoshop bridge is not ready.', true);
             console.error('[LassoPaint] Photoshop bridge is unavailable.');
+            return;
+          }
+
+          const allowFillWithoutSelection = allowFillWithoutSelectionCheckbox ? Boolean(allowFillWithoutSelectionCheckbox.checked) : false;
+          if (!allowFillWithoutSelection) {
+            PanelUI.setStatus("Fill requires an active selection. Enable 'Allow fill without selection' to override.", true);
+            console.warn('[LassoPaint] Fill requires an active selection.');
             return;
           }
 
