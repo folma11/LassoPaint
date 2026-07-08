@@ -12,9 +12,9 @@
     console.info('[LassoPaint] Initializing plugin modules.');
 
     app.ui = window.LassoPaintUI || null;
-    app.photoshop = window.LassoPaintPhotoshop || null;
+    app.photoshop = window.LassoPaintPhotoshopBridge || window.LassoPaintPhotoshop || null;
     app.batchplay = window.LassoPaintBatchPlay || null;
-    app.settings = window.LassoPaintSettings || null;
+    app.settings = window.LassoPaintSettings || window.LassoPaintSettingsStorage || null;
 
     if (app.batchplay && typeof app.batchplay.initialize === 'function') {
       app.batchplay.initialize();

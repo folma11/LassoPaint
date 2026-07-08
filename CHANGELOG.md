@@ -1,5 +1,29 @@
 # Changelog
 
+## 0.6.3 - 2026-07-08
+
+- Rolled back the experimental selection-check logic so Run Fill again uses the safe v0.5.0-style fill workflow without calling any selection-check BatchPlay command.
+- Added a visible warning note in the panel that explains Photoshop may fill the whole layer when no selection exists.
+- Kept New Layer before fill, Deselect after fill, and the disabled Selection Watcher behavior intact.
+
+## 0.6.2 - 2026-07-08
+
+- Made the no-selection guard mandatory for Run Fill so the workflow aborts before any layer, fill, or deselect commands can run.
+- Replaced the previous guard with a direct BatchPlay selection-bounds check that logs "Selection check: true" or "Selection check: false" and never reaches the fill descriptor when no selection exists.
+- Kept the selection watcher disabled and preserved the existing settings and advanced helpers.
+
+## 0.6.1 - 2026-07-08
+
+- Added a safe selection check before any fill workflow so Run Fill aborts with "No active selection." when there is no current selection.
+- Prevented fill, new-layer, and deselect steps from running when no selection exists, while leaving the existing settings and advanced helpers intact.
+- Kept the selection watcher disabled and avoided any blocking Photoshop dialogs during the guard check.
+
+## 0.6.0 - 2026-07-08
+
+- Refactored the panel into clearer module boundaries under commands, photoshop, storage, and ui without changing the visible workflow.
+- Kept the Run Fill workflow, advanced helpers, diagnostics, and disabled selection watcher behavior intact while routing them through the new module structure.
+- Preserved localStorage-backed settings and the existing Photoshop BatchPlay execution path.
+
 ## 0.5.0 - 2026-07-08
 
 - Replaced the panel workflow with a practical one-button configurable fill system.

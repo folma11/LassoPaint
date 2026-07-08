@@ -97,6 +97,7 @@
         <label><input id="newLayerCheckbox" type="checkbox"> New Layer before fill</label>
         <label><input id="deselectCheckbox" type="checkbox"> Deselect after fill</label>
       </div>
+      <p style="font-size: 12px; color: #8b1f1f;">Warning: If no selection exists, Photoshop may fill the whole layer.</p>
       <div id="statusText" class="status" role="status" aria-live="polite">Ready.</div>
     </div>
 
@@ -132,9 +133,14 @@
     </div>
   </div>
 
-  <script src="js/ui.js"></script>
-  <script src="js/photoshop.js"></script>
-  <script src="js/batchplay.js"></script>
+  <script src="storage/settings.js"></script>
+  <script src="photoshop/batchplay.js"></script>
+  <script src="photoshop/modal.js"></script>
+  <script src="commands/fill.js"></script>
+  <script src="commands/deselect.js"></script>
+  <script src="commands/layer.js"></script>
+  <script src="photoshop/bridge.js"></script>
+  <script src="ui/panel.js"></script>
   <script src="js/main.js"></script>
 </body>
 </html>
