@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Lasso Paint</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: sans-serif;
+      background: #f5f5f5;
+      color: #222;
+    }
+
+    .panel {
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .panel h1 {
+      margin: 0;
+      font-size: 20px;
+    }
+
+    .panel h2 {
+      margin: 0;
+      font-size: 16px;
+    }
+
+    .panel p {
+      margin: 0;
+      line-height: 1.4;
+      color: #444;
+    }
+
+    .panel button {
+      width: fit-content;
+      padding: 8px 12px;
+      cursor: pointer;
+    }
+
+    .status {
+      min-height: 1.2em;
+      font-size: 13px;
+      color: #1f5f3c;
+    }
+
+    .status.error {
+      color: #8b1f1f;
+    }
+
+    .section {
+      border-top: 1px solid #ddd;
+      padding-top: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .button-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .settings-row {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      font-size: 13px;
+    }
+
+    .log-area {
+      height: 180px;
+      overflow: auto;
+      border: 1px solid #ccc;
+      background: #fff;
+      padding: 8px;
+      font-family: Consolas, monospace;
+      font-size: 12px;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+  </style>
+</head>
+<body>
+  <div class="panel">
+    <h1>Lasso Paint</h1>
+    <p>Run a practical one-click fill workflow for the current Photoshop selection.</p>
+
+    <div class="section">
+      <h2>Fill Workflow</h2>
+      <button id="runFillButton" type="button">Run Fill</button>
+      <div class="settings-row">
+        <label><input id="newLayerCheckbox" type="checkbox"> New Layer before fill</label>
+        <label><input id="deselectCheckbox" type="checkbox"> Deselect after fill</label>
+      </div>
+      <div id="statusText" class="status" role="status" aria-live="polite">Ready.</div>
+    </div>
+
+    <div class="section">
+      <h2>Advanced</h2>
+      <div class="button-row">
+        <button id="fillSelectionButton" type="button" data-action="fillSelectionWithForegroundColor">Fill Selection</button>
+        <button id="fillAndDeselectButton" type="button" data-action="fillSelectionAndDeselect">Fill + Deselect</button>
+        <button id="newLayerFillButton" type="button" data-action="newLayerAndFill">New Layer + Fill</button>
+        <button id="newLayerFillDeselectButton" type="button" data-action="newLayerAndFillAndDeselect">New Layer + Fill + Deselect</button>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>Event Diagnostics</h2>
+      <div class="button-row">
+        <button id="startEventLogButton" type="button">Start Event Log</button>
+        <button id="stopEventLogButton" type="button">Stop Event Log</button>
+        <button id="clearEventLogButton" type="button">Clear Log</button>
+      </div>
+      <div id="eventLog" class="log-area" aria-live="polite"></div>
+    </div>
+
+    <div class="section">
+      <h2>Selection Watcher</h2>
+      <p>Experimental / Disabled.</p>
+      <div class="button-row">
+        <button id="startWatchButton" type="button" disabled>Start Watch</button>
+        <button id="stopWatchButton" type="button" disabled>Stop Watch</button>
+        <button id="clearWatchLogButton" type="button" disabled>Clear Watch Log</button>
+      </div>
+      <div id="watchLog" class="log-area" aria-live="polite"></div>
+    </div>
+  </div>
+
+  <script src="js/ui.js"></script>
+  <script src="js/photoshop.js"></script>
+  <script src="js/batchplay.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>

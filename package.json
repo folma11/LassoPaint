@@ -1,0 +1,17 @@
+{
+  "name": "lasso-paint",
+  "version": "0.5.0",
+  "private": true,
+  "description": "A production-ready Adobe Photoshop UXP plugin scaffold for Lasso Paint.",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/your-username/lasso-paint.git"
+  },
+  "scripts": {
+    "validate": "echo 'UXP plugin scaffold ready for Adobe UXP Developer Tool.'"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
