@@ -14,7 +14,7 @@ A lightweight Adobe Photoshop UXP plugin that streamlines the selection fill wor
 
 <p align="center">
 
-<img src="https://img.shields.io/badge/version-v0.16.1-blue" alt="Version">
+<img src="https://img.shields.io/badge/version-v0.16.2-blue" alt="Version">
 <img src="https://img.shields.io/badge/license-MIT-green" alt="MIT License">
 <img src="https://img.shields.io/badge/Adobe-Photoshop-31A8FF?logo=adobephotoshop&logoColor=white" alt="Adobe Photoshop">
 <img src="https://img.shields.io/badge/UXP-Plugin-orange?logo=adobe&logoColor=white" alt="UXP Plugin">
@@ -63,6 +63,10 @@ Skip actions when no active selection can be confirmed.
 ### Fill Opacity
 
 Choose fill opacity in 20% steps from 20 to 100.
+
+### Fill Presets
+
+Switch quickly between Base, Shadow, Highlight, and Overlay fill settings.
 
 ### Blend Mode
 
@@ -114,6 +118,7 @@ Optional settings:
 - **Fill** fills new selections with the foreground color.
 - **Erase** clears new selections to transparency.
 - **OFF** disables automatic actions.
+- **Preset** applies common fill settings for base color, shadow, highlight, and overlay work.
 - **Opacity** controls fill strength in 20% steps.
 - **Blend Mode** switches fill behavior between Normal, Multiply, Screen, and Overlay.
 - **New Layer before Fill** creates a new layer before filling in Fill mode.

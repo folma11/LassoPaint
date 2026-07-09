@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.16.2 - 2026-07-10
+
+- Added built-in Fill Presets for Base, Shadow, Highlight, and Overlay workflows.
+- Presets now update the current fill opacity and blend mode controls.
+- Kept Erase behavior independent from preset, opacity, and blend mode settings.
+- Updated project metadata to version 0.16.2.
+
 ## 0.16.1 - 2026-07-10
 
 - Added a Fill blend mode control with Normal, Multiply, Screen, and Overlay options.

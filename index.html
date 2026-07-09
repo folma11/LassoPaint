@@ -334,6 +334,7 @@
       margin-bottom: var(--space-1);
     }
 
+    .preset-control,
     .opacity-control,
     .blend-control {
       width: 100%;
@@ -342,14 +343,33 @@
       gap: var(--space-1);
     }
 
-    .opacity-control {
+    .preset-control {
       margin: var(--space-1) 0 var(--space-3);
+      padding: var(--space-2);
+      border-radius: var(--control-radius);
+      background: var(--color-surface);
+      border: 1px solid var(--color-separator);
+    }
+
+    .preset-title {
+      margin: 0;
+      color: var(--color-text-muted);
+      font-size: 10px;
+      font-weight: 600;
+      line-height: 1;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .opacity-control {
+      margin: 0 0 var(--space-3);
     }
 
     .blend-control {
       margin: calc(-1 * var(--space-2)) 0 var(--space-3);
     }
 
+    .preset-options,
     .opacity-options,
     .blend-options {
       width: 100%;
@@ -360,6 +380,7 @@
       padding: 0;
     }
 
+    .preset-option,
     .opacity-option,
     .blend-option {
       box-sizing: border-box;
@@ -387,28 +408,33 @@
       line-height: 1;
     }
 
+    .preset-option + .preset-option,
     .opacity-option + .opacity-option,
     .blend-option + .blend-option {
       margin-left: -1px;
     }
 
+    .preset-option:first-child,
     .opacity-option:first-child,
     .blend-option:first-child {
       border-top-right-radius: 0;
       border-bottom-right-radius: 0;
     }
 
+    .preset-option:not(:first-child):not(:last-child),
     .opacity-option:not(:first-child):not(:last-child),
     .blend-option:not(:first-child):not(:last-child) {
       border-radius: 0;
     }
 
+    .preset-option:last-child,
     .opacity-option:last-child,
     .blend-option:last-child {
       border-top-left-radius: 0;
       border-bottom-left-radius: 0;
     }
 
+    .preset-option:hover,
     .opacity-option:hover,
     .blend-option:hover {
       background: var(--color-surface-hover);
@@ -416,18 +442,49 @@
       -webkit-text-fill-color: var(--color-text);
     }
 
+    .preset-option:focus-visible,
     .opacity-option:focus-visible,
     .blend-option:focus-visible {
       outline: 2px solid var(--color-focus);
       outline-offset: 1px;
     }
 
+    .preset-option[aria-pressed="true"],
     .opacity-option[aria-pressed="true"],
     .blend-option[aria-pressed="true"] {
       background: var(--color-accent);
       border-color: var(--color-accent);
       color: var(--color-text-heading);
       -webkit-text-fill-color: var(--color-text-heading);
+    }
+
+    .fill-setting.is-disabled {
+      opacity: 0.42;
+    }
+
+    .fill-setting.is-disabled .preset-option,
+    .fill-setting.is-disabled .opacity-option,
+    .fill-setting.is-disabled .blend-option {
+      cursor: pointer;
+      color: var(--color-disabled);
+      -webkit-text-fill-color: var(--color-disabled);
+    }
+
+    .fill-setting.is-disabled .preset-option:hover,
+    .fill-setting.is-disabled .opacity-option:hover,
+    .fill-setting.is-disabled .blend-option:hover {
+      background: var(--color-surface-pressed);
+      color: var(--color-disabled);
+      -webkit-text-fill-color: var(--color-disabled);
+    }
+
+    .fill-setting.is-disabled .preset-option[aria-pressed="true"],
+    .fill-setting.is-disabled .opacity-option[aria-pressed="true"],
+    .fill-setting.is-disabled .blend-option[aria-pressed="true"] {
+      background: var(--color-border);
+      border-color: var(--color-border);
+      color: var(--color-text);
+      -webkit-text-fill-color: var(--color-text);
     }
 
     .workflow-option {
@@ -531,7 +588,17 @@
       </div>
     </div>
 
-    <div class="opacity-control" aria-label="Fill opacity">
+    <div class="preset-control fill-setting" aria-label="Fill preset">
+      <div class="preset-title">Presets</div>
+      <div class="preset-options" role="group" aria-label="Fill preset">
+        <button class="preset-option" type="button" data-preset="base" aria-label="Preset Base" aria-pressed="true">Base</button>
+        <button class="preset-option" type="button" data-preset="shadow" aria-label="Preset Shadow" aria-pressed="false">Shadow</button>
+        <button class="preset-option" type="button" data-preset="highlight" aria-label="Preset Highlight" aria-pressed="false">Highlight</button>
+        <button class="preset-option" type="button" data-preset="overlay" aria-label="Preset Overlay" aria-pressed="false">Overlay</button>
+      </div>
+    </div>
+
+    <div class="opacity-control fill-setting" aria-label="Fill opacity">
       <div class="opacity-options" role="group" aria-label="Fill opacity">
         <button class="opacity-option" type="button" data-opacity="20" aria-label="Fill opacity 20%" aria-pressed="false">20</button>
         <button class="opacity-option" type="button" data-opacity="40" aria-label="Fill opacity 40%" aria-pressed="false">40</button>
@@ -541,7 +608,7 @@
       </div>
     </div>
 
-    <div class="blend-control" aria-label="Fill blend mode">
+    <div class="blend-control fill-setting" aria-label="Fill blend mode">
       <div class="blend-options" role="group" aria-label="Fill blend mode">
         <button class="blend-option" type="button" data-blend-mode="normal" aria-label="Blend mode normal" aria-pressed="true">Normal</button>
         <button class="blend-option" type="button" data-blend-mode="multiply" aria-label="Blend mode multiply" aria-pressed="false">Multiply</button>
