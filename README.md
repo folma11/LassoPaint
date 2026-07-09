@@ -1,27 +1,29 @@
 <p align="center">
-  <img src="assets/logo/logo.svg" width="220" alt="Lasso Paint logo">
-</p>
-
-<p align="center">
-  <img alt="Version v0.12.3" src="https://img.shields.io/badge/version-v0.12.3-blue">
-  <img alt="MIT License" src="https://img.shields.io/badge/license-MIT-green">
-  <img alt="Adobe Photoshop" src="https://img.shields.io/badge/Adobe-Photoshop-31A8FF">
-  <img alt="UXP Plugin" src="https://img.shields.io/badge/UXP-Plugin-4700D8">
-  <img alt="Windows" src="https://img.shields.io/badge/Windows-supported-0078D4">
+  <img src="assets/logo/mark.svg" alt="Lasso Paint" width="96">
 </p>
 
 <h1 align="center">Lasso Paint</h1>
 
 <p align="center">
-  <strong>Fill selections faster.<br>Stay in the flow.</strong>
+<strong>Fill selections faster. Stay in the flow.</strong>
 </p>
 
 <p align="center">
-  A lightweight Adobe Photoshop UXP plugin that streamlines the selection fill workflow.
+A lightweight Adobe Photoshop UXP plugin that streamlines the selection fill workflow.
 </p>
 
 <p align="center">
-  <img src="assets/screenshots/workflow.gif" width="900" alt="Lasso Paint workflow">
+
+<img src="https://img.shields.io/badge/version-v0.12.3-blue" alt="Version">
+<img src="https://img.shields.io/badge/license-MIT-green" alt="MIT License">
+<img src="https://img.shields.io/badge/Adobe-Photoshop-31A8FF?logo=adobephotoshop&logoColor=white" alt="Adobe Photoshop">
+<img src="https://img.shields.io/badge/UXP-Plugin-orange?logo=adobe&logoColor=white" alt="UXP Plugin">
+<img src="https://img.shields.io/badge/platform-Windows-lightgrey" alt="Windows">
+
+</p>
+
+<p align="center">
+  <img src="assets/screenshots/workflow.gif" alt="Workflow Demo" width="900">
 </p>
 
 ## Why Lasso Paint?
