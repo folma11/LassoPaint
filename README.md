@@ -14,7 +14,7 @@ A lightweight Adobe Photoshop UXP plugin that streamlines the selection fill wor
 
 <p align="center">
 
-<img src="https://img.shields.io/badge/version-v0.15.8-blue" alt="Version">
+<img src="https://img.shields.io/badge/version-v0.15.17-blue" alt="Version">
 <img src="https://img.shields.io/badge/license-MIT-green" alt="MIT License">
 <img src="https://img.shields.io/badge/Adobe-Photoshop-31A8FF?logo=adobephotoshop&logoColor=white" alt="Adobe Photoshop">
 <img src="https://img.shields.io/badge/UXP-Plugin-orange?logo=adobe&logoColor=white" alt="UXP Plugin">

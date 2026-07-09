@@ -99,7 +99,7 @@
 
     .brand + .primary,
     .brand + .primary-split {
-      margin-top: calc(var(--space-1) * -1);
+      margin-top: var(--space-2);
     }
 
     .panel h2 {
@@ -183,7 +183,7 @@
 
     .primary-split {
       width: 100%;
-      min-height: 48px;
+      min-height: 42px;
       display: flex;
       flex-direction: row;
       gap: var(--space-1);
@@ -196,23 +196,66 @@
       min-width: 0;
     }
 
-    .panel button.toggle {
+    .primary-split > .mode-btn {
+      flex: 1 1 33%;
+      min-width: 0;
+    }
+
+    .mode-btn {
+      width: 42px;
+      height: 42px;
+      min-height: 42px;
+      padding: 0;
+      margin: 0;
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: var(--space-1);
-      min-height: 48px;
-      padding: 6px var(--space-1);
-      font-size: 13px;
-      font-weight: 600;
-      text-align: center;
-      white-space: nowrap;
+      cursor: pointer;
+      appearance: none;
+      -webkit-appearance: none;
+      overflow: hidden;
+      border: 1px solid var(--color-border);
+      border-radius: var(--control-radius);
+      background: var(--color-surface);
+      color: var(--color-text);
+      user-select: none;
     }
 
-    .panel button.toggle[aria-pressed="true"] {
+    .mode-btn:hover {
+      background: var(--color-surface-hover);
+    }
+
+    .mode-btn:active {
+      background: var(--color-surface-pressed);
+    }
+
+    .mode-btn:focus-visible {
+      outline: 2px solid var(--color-focus);
+      outline-offset: 1px;
+    }
+
+    .mode-btn[aria-pressed="true"] {
       background: var(--color-accent);
       border-color: var(--color-accent);
       color: var(--color-text-heading);
+    }
+
+    .mode-icon-wrap {
+      width: 22px;
+      height: 22px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      pointer-events: none;
+    }
+
+    .mode-icon {
+      width: 22px;
+      height: 22px;
+      display: block;
+      object-fit: contain;
+      background: transparent;
+      pointer-events: none;
     }
 
     .status {
@@ -374,9 +417,21 @@
     </header>
 
     <div class="primary-split" role="group" aria-label="Auto Mode">
-      <button id="autoFillModeButton" class="toggle" type="button" aria-pressed="false">Fill</button>
-      <button id="autoEraseModeButton" class="toggle" type="button" aria-pressed="false">Erase</button>
-      <button id="autoOffModeButton" class="toggle" type="button" aria-pressed="true">OFF</button>
+      <div id="autoFillModeButton" class="mode-btn" role="button" tabindex="0" aria-label="Fill mode" title="Fill mode" aria-pressed="false">
+        <span class="mode-icon-wrap" aria-hidden="true">
+          <img class="mode-icon" src="assets/icons/mode-fill.png" alt="">
+        </span>
+      </div>
+      <div id="autoEraseModeButton" class="mode-btn" role="button" tabindex="0" aria-label="Erase mode" title="Erase mode" aria-pressed="false">
+        <span class="mode-icon-wrap" aria-hidden="true">
+          <img class="mode-icon" src="assets/icons/mode-erase.png" alt="">
+        </span>
+      </div>
+      <div id="autoOffModeButton" class="mode-btn" role="button" tabindex="0" aria-label="Auto mode off" title="Auto mode off" aria-pressed="true">
+        <span class="mode-icon-wrap" aria-hidden="true">
+          <img class="mode-icon" src="assets/icons/mode-off.png" alt="">
+        </span>
+      </div>
     </div>
 
     <div class="section">

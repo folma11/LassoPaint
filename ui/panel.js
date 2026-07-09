@@ -171,26 +171,30 @@
         }
       }
 
+      function bindModeButton(element, mode) {
+        if (!element) {
+          return;
+        }
+
+        const activate = async () => {
+          writeStorageString('lassopaint.autoMode', mode);
+          await setAutoMode(mode);
+        };
+
+        element.addEventListener('click', activate);
+        element.addEventListener('keydown', (event) => {
+          if (event.key === 'Enter' || event.key === ' ') {
+            event.preventDefault();
+            activate();
+          }
+        });
+      }
+
       if (autoFillModeButton || autoEraseModeButton || autoOffModeButton) {
         setAutoModeButtonState(readInitialAutoMode());
-        if (autoFillModeButton) {
-          autoFillModeButton.addEventListener('click', async () => {
-            writeStorageString('lassopaint.autoMode', 'fill');
-            await setAutoMode('fill');
-          });
-        }
-        if (autoEraseModeButton) {
-          autoEraseModeButton.addEventListener('click', async () => {
-            writeStorageString('lassopaint.autoMode', 'erase');
-            await setAutoMode('erase');
-          });
-        }
-        if (autoOffModeButton) {
-          autoOffModeButton.addEventListener('click', async () => {
-            writeStorageString('lassopaint.autoMode', 'off');
-            await setAutoMode('off');
-          });
-        }
+        bindModeButton(autoFillModeButton, 'fill');
+        bindModeButton(autoEraseModeButton, 'erase');
+        bindModeButton(autoOffModeButton, 'off');
       }
 
       async function runCommandAction(commandName, buttonElement, fallbackLabel) {

@@ -1,5 +1,60 @@
 # Changelog
 
+## 0.15.17 - 2026-07-09
+
+- Updated the Fill mode icon to a tilted paint-bucket style.
+- Updated the OFF mode icon to a heavier power-symbol style.
+- Updated project metadata to version 0.15.17.
+
+## 0.15.16 - 2026-07-09
+
+- Slightly reduced Auto Mode icon size while keeping the larger button targets.
+- Tilted the Fill mode icon to better suggest a fill tool.
+- Increased spacing between the tagline and Auto Mode controls.
+- Updated project metadata to version 0.15.16.
+
+## 0.15.15 - 2026-07-09
+
+- Increased Auto Mode button height and PNG icon size for clearer Fill, Erase, and OFF controls.
+- Updated project metadata to version 0.15.15.
+
+## 0.15.14 - 2026-07-09
+
+- Reworked Auto Mode controls to use `div role="button"` wrappers with PNG icons for more stable Photoshop UXP rendering.
+- Added keyboard activation for Enter and Space on the icon-only Auto Mode controls.
+- Kept `aria-label`, `title`, and `aria-pressed` accessibility attributes on all Auto Mode controls.
+- Updated project metadata to version 0.15.14.
+
+## 0.15.13 - 2026-07-09
+
+- Replaced PNG Auto Mode icons with text-rendered pictograms so buttons remain visible without hover.
+- Kept pictogram-only Fill, Erase, and OFF controls with accessible labels and hover titles.
+- Updated project metadata to version 0.15.13.
+
+## 0.15.12 - 2026-07-09
+
+- Rebuilt the Auto Mode PNG icons with transparent backgrounds.
+- Reduced mode icon display size and added explicit image dimensions for reliable Photoshop UXP rendering.
+- Updated project metadata to version 0.15.12.
+
+## 0.15.11 - 2026-07-09
+
+- Replaced CSS-drawn Auto Mode pictograms with PNG image icons for reliable Photoshop UXP panel rendering.
+- Added Fill, Erase, and OFF mode icon assets.
+- Updated project metadata to version 0.15.11.
+
+## 0.15.10 - 2026-07-09
+
+- Replaced inline SVG mode icons with CSS-drawn pictograms for better Photoshop UXP panel rendering.
+- Kept pictogram-only Auto Mode controls with accessible labels and hover titles.
+- Updated project metadata to version 0.15.10.
+
+## 0.15.9 - 2026-07-09
+
+- Replaced the Auto Mode Fill, Erase, and OFF button text with pictogram-only controls.
+- Added accessible labels and hover titles for the pictogram mode buttons.
+- Updated project metadata to version 0.15.9.
+
 ## 0.15.8 - 2026-07-09
 
 - Changed Erase mode to call `app.activeDocument.activeLayers[0].clear()` after the existing selection bounds guard.
