@@ -15,9 +15,49 @@
     }
   }
 
+  function bindCollapsibleSection(toggleId, contentId) {
+    const toggle = document.getElementById(toggleId);
+    const content = document.getElementById(contentId);
+
+    if (!toggle || !content) {
+      console.warn(`[LassoPaint] Accordion elements not found: ${toggleId}, ${contentId}.`);
+      return;
+    }
+
+    function setExpanded(expanded) {
+      if (expanded) {
+        content.classList.remove('is-collapsed');
+      } else {
+        content.classList.add('is-collapsed');
+      }
+
+      toggle.setAttribute('aria-expanded', expanded ? 'true' : 'false');
+      const marker = toggle.querySelector('.section-muted');
+      if (marker) {
+        marker.textContent = expanded ? '▾' : '▸';
+      }
+    }
+
+    function toggleSection() {
+      setExpanded(content.classList.contains('is-collapsed'));
+    }
+
+    setExpanded(false);
+    toggle.addEventListener('click', toggleSection);
+    toggle.addEventListener('keydown', (event) => {
+      if (event.key === 'Enter' || event.key === ' ') {
+        event.preventDefault();
+        toggleSection();
+      }
+    });
+  }
+
   const PanelUI = {
     attach(context) {
       appContext = context || null;
+
+      bindCollapsibleSection('advancedToggle', 'advancedContent');
+      bindCollapsibleSection('developerToggle', 'developerContent');
 
       const runFillButton = document.getElementById('runFillButton');
       const newLayerCheckbox = document.getElementById('newLayerCheckbox');

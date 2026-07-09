@@ -4,144 +4,409 @@
   <meta charset="utf-8">
   <title>Lasso Paint</title>
   <style>
+    :root {
+      color-scheme: dark;
+
+      --color-bg: #323232;
+      --color-surface: #3b3b3b;
+      --color-surface-hover: #454545;
+      --color-surface-pressed: #292929;
+      --color-border: #505050;
+      --color-separator: #464646;
+      --color-text: #e0e0e0;
+      --color-text-heading: #ffffff;
+      --color-text-muted: #ababab;
+      --color-text-status: #c2c2c2;
+      --color-accent: #1473e6;
+      --color-accent-hover: #2680eb;
+      --color-accent-pressed: #0d66d0;
+      --color-focus: #5aa9fa;
+      --color-success: #8fbc8f;
+      --color-warning: #d2aa68;
+      --color-error: #d98787;
+      --color-disabled: #777777;
+
+      --space-1: 4px;
+      --space-2: 8px;
+      --space-3: 12px;
+      --space-4: 16px;
+      --space-5: 20px;
+      --control-radius: 3px;
+      --font-ui: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      --font-mono: Consolas, "SFMono-Regular", monospace;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
     body {
       margin: 0;
       padding: 0;
-      font-family: sans-serif;
-      background: #f5f5f5;
-      color: #222;
+      min-width: 250px;
+      font-family: var(--font-ui);
+      font-size: 13px;
+      line-height: 1.4;
+      background: var(--color-bg);
+      color: var(--color-text);
+      -webkit-font-smoothing: antialiased;
     }
 
     .panel {
-      padding: 16px;
+      width: 100%;
+      max-width: 450px;
+      margin: 0 auto;
+      padding: var(--space-4);
       display: flex;
       flex-direction: column;
-      gap: 12px;
+      gap: var(--space-3);
     }
 
     .panel h1 {
       margin: 0;
-      font-size: 20px;
+      color: var(--color-text-heading);
+      font-size: 17px;
+      font-weight: 600;
+      line-height: 1.3;
+    }
+
+    .brand {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 0;
+      text-align: center;
+    }
+
+    .brand-logo {
+      width: 36px;
+      max-width: 160px;
+      height: auto;
+      display: block;
+      margin: 0 auto 4px;
+    }
+
+    .brand-copy {
+      min-width: 0;
+    }
+
+    .brand-tagline {
+      margin-top: 2px;
+      color: var(--color-text-muted);
+      font-size: 11px;
+      line-height: 1.25;
+    }
+
+    .brand + .primary {
+      margin-top: calc(var(--space-1) * -1);
     }
 
     .panel h2 {
       margin: 0;
-      font-size: 16px;
+      color: var(--color-text);
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
     }
 
     .panel p {
       margin: 0;
       line-height: 1.4;
-      color: #444;
+      color: var(--color-text-muted);
     }
 
     .panel button {
-      width: fit-content;
-      padding: 8px 12px;
+      min-height: 30px;
+      max-width: 100%;
+      padding: 6px var(--space-3);
       cursor: pointer;
+      border: 1px solid var(--color-border);
+      border-radius: var(--control-radius);
+      background: var(--color-surface);
+      color: var(--color-text);
+      font: inherit;
+      font-weight: 500;
+      line-height: 1.3;
+      white-space: normal;
+    }
+
+    .panel button:hover:not(:disabled) {
+      background: var(--color-surface-hover);
+    }
+
+    .panel button:active:not(:disabled) {
+      background: var(--color-surface-pressed);
+    }
+
+    .panel button:focus-visible,
+    .section-title:focus-visible {
+      outline: 2px solid var(--color-focus);
+      outline-offset: 1px;
+    }
+
+    .panel button:disabled {
+      cursor: default;
+      color: var(--color-disabled);
+      border-color: var(--color-separator);
+      background: var(--color-bg);
+    }
+
+    .panel button.primary {
+      width: 100%;
+      height: 48px;
+      min-height: 48px;
+      padding: var(--space-2) var(--space-4);
+      font-size: 14px;
+      font-weight: 600;
+      background: var(--color-accent);
+      color: var(--color-text-heading);
+      border-color: var(--color-accent);
+      margin: var(--space-1) 0;
+    }
+
+    .panel button.primary:hover:not(:disabled) {
+      background: var(--color-accent-hover);
+      border-color: var(--color-accent-hover);
+    }
+
+    .panel button.primary:active:not(:disabled) {
+      background: var(--color-accent-pressed);
+      border-color: var(--color-accent-pressed);
+    }
+
+    .panel button.compact {
+      padding: 5px var(--space-2);
+      font-size: 12px;
     }
 
     .status {
       min-height: 1.2em;
-      font-size: 13px;
-      color: #1f5f3c;
+      margin-top: var(--space-1);
+      padding-top: var(--space-3);
+      border-top: 1px solid var(--color-separator);
+      color: var(--color-text-status);
+      font-size: 12px;
     }
 
     .status.error {
-      color: #8b1f1f;
+      color: var(--color-error);
     }
 
     .section {
-      border-top: 1px solid #ddd;
-      padding-top: 12px;
+      border-top: 1px solid var(--color-separator);
+      padding-top: var(--space-3);
       display: flex;
       flex-direction: column;
-      gap: 8px;
+      gap: var(--space-2);
+    }
+
+    .section-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--space-2);
+      cursor: pointer;
+      min-height: 24px;
+      padding: var(--space-1) 0;
+      user-select: none;
+    }
+
+    .section-content {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-2);
+    }
+
+    .section-content.is-collapsed {
+      display: none;
+    }
+
+    .section-note {
+      font-size: 12px;
+      line-height: 1.4;
+      padding: var(--space-1) 0 0 24px;
+    }
+
+    .safety-description,
+    .safety-description[hidden] {
+      display: block;
+      color: var(--color-text-muted);
+      padding-top: 0;
+    }
+
+    .section-muted {
+      color: var(--color-text-muted);
+      font-size: 12px;
     }
 
     .button-row {
       display: flex;
       flex-wrap: wrap;
-      gap: 8px;
+      gap: var(--space-2);
+    }
+
+    .button-row > button {
+      flex: 1 1 120px;
     }
 
     .settings-row {
       display: flex;
       flex-direction: column;
-      gap: 6px;
-      font-size: 13px;
+      gap: var(--space-2);
+      padding: 0;
+      background: transparent;
+      margin-top: var(--space-1);
+    }
+
+    .settings-row h2 {
+      margin-bottom: var(--space-1);
+    }
+
+    .workflow-option {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+      min-height: 20px;
+      padding: 2px 0;
+      color: var(--color-text) !important;
+      -webkit-text-fill-color: var(--color-text);
+      line-height: 1.4;
+      cursor: pointer;
+      visibility: visible;
+      opacity: 1;
+    }
+
+    .workflow-option span {
+      display: block;
+      min-width: 0;
+      color: var(--color-text) !important;
+      -webkit-text-fill-color: var(--color-text);
+      font-weight: 400;
+      opacity: 1;
+    }
+
+    .workflow-option input[type="checkbox"] {
+      appearance: auto;
+      -webkit-appearance: checkbox;
+      flex: 0 0 16px;
+      width: 16px;
+      height: 16px;
+      margin: 0;
+      opacity: 1;
+      accent-color: var(--color-accent);
+      color-scheme: dark;
+      cursor: pointer;
+    }
+
+    .workflow-option input[type="checkbox"]:focus-visible {
+      outline: 2px solid var(--color-focus);
+      outline-offset: 1px;
     }
 
     .log-area {
-      height: 180px;
+      height: 140px;
       overflow: auto;
-      border: 1px solid #ccc;
-      background: #fff;
-      padding: 8px;
-      font-family: Consolas, monospace;
+      border: 1px solid var(--color-border);
+      border-radius: var(--control-radius);
+      background: var(--color-surface-pressed);
+      color: var(--color-text);
+      padding: var(--space-2);
+      font-family: var(--font-mono);
       font-size: 12px;
       white-space: pre-wrap;
       word-break: break-word;
+    }
+
+    .experimental-toggle {
+      font-size: 12px;
+      color: var(--color-text-muted);
+      padding: var(--space-1) 0;
+    }
+
+    @media (max-width: 300px) {
+      .panel {
+        padding: var(--space-3);
+      }
+
+      .button-row > button {
+        flex-basis: 100%;
+      }
     }
   </style>
 </head>
 <body>
   <div class="panel">
-    <h1>Lasso Paint</h1>
-    <p>Run a practical one-click fill workflow for the current Photoshop selection.</p>
+    <header class="brand">
+      <img class="brand-logo" src="assets/logo/logo.png" alt="Lasso Paint logo">
+      <div class="brand-copy">
+        <h1>Lasso Paint</h1>
+        <div class="brand-tagline">Fill selections faster. Stay in the flow.</div>
+      </div>
+    </header>
+
+    <button id="runFillButton" class="primary" type="button">Run Fill</button>
 
     <div class="section">
-      <h2>Fill Workflow</h2>
-      <button id="runFillButton" type="button">Run Fill</button>
       <div class="settings-row">
-        <label><input id="newLayerCheckbox" type="checkbox"> New Layer before fill</label>
-        <label><input id="deselectCheckbox" type="checkbox"> Deselect after fill</label>
-        <label><input id="allowFillWithoutSelectionCheckbox" type="checkbox"> Allow fill without selection</label>
-      </div>
-      <p style="font-size: 12px; color: #8b1f1f;">Warning: If no selection exists, Photoshop may fill the whole layer.</p>
-      <div id="statusText" class="status" role="status" aria-live="polite">Ready.</div>
-    </div>
-
-    <div class="section">
-      <h2>Quick Commands</h2>
-      <div class="button-row">
-        <button id="quickFillButton" type="button" data-command="fill">Fill</button>
-        <button id="quickFillDeselectButton" type="button" data-command="fillDeselect">Fill+Deselect</button>
-        <button id="quickNewLayerFillButton" type="button" data-command="newLayerFill">NewLayer+Fill</button>
-        <button id="quickNewLayerFillDeselectButton" type="button" data-command="newLayerFillDeselect">NewLayer+Fill+Deselect</button>
+        <h2>Workflow</h2>
+        <label class="workflow-option" for="newLayerCheckbox"><input id="newLayerCheckbox" type="checkbox"><span>New Layer before fill</span></label>
+        <label class="workflow-option" for="deselectCheckbox"><input id="deselectCheckbox" type="checkbox"><span>Deselect after fill</span></label>
       </div>
     </div>
 
     <div class="section">
-      <h2>Advanced</h2>
-      <div class="button-row">
-        <button id="fillSelectionButton" type="button" data-action="fillSelectionWithForegroundColor">Fill Selection</button>
-        <button id="fillAndDeselectButton" type="button" data-action="fillSelectionAndDeselect">Fill + Deselect</button>
-        <button id="newLayerFillButton" type="button" data-action="newLayerAndFill">New Layer + Fill</button>
-        <button id="newLayerFillDeselectButton" type="button" data-action="newLayerAndFillAndDeselect">New Layer + Fill + Deselect</button>
+      <div class="settings-row">
+        <h2>Safety</h2>
+        <label class="workflow-option" for="allowFillWithoutSelectionCheckbox"><input id="allowFillWithoutSelectionCheckbox" type="checkbox"><span>Allow fill without selection</span></label>
+        <p id="warningText" class="section-note safety-description">Allows filling the entire layer<br>when no selection exists.</p>
       </div>
     </div>
 
     <div class="section">
-      <h2>Event Diagnostics</h2>
-      <div class="button-row">
-        <button id="startEventLogButton" type="button">Start Event Log</button>
-        <button id="stopEventLogButton" type="button">Stop Event Log</button>
-        <button id="clearEventLogButton" type="button">Clear Log</button>
+      <div class="section-title" id="advancedToggle" role="button" tabindex="0" aria-expanded="false" aria-controls="advancedContent">
+        <h2>Advanced</h2>
+        <span class="section-muted">▸</span>
       </div>
-      <div id="eventLog" class="log-area" aria-live="polite"></div>
+      <div class="section-content is-collapsed" id="advancedContent">
+        <div class="button-row">
+          <button id="quickFillButton" class="compact" type="button" data-command="fill">Fill</button>
+          <button id="quickFillDeselectButton" class="compact" type="button" data-command="fillDeselect">Fill+Deselect</button>
+          <button id="quickNewLayerFillButton" class="compact" type="button" data-command="newLayerFill">NewLayer+Fill</button>
+          <button id="quickNewLayerFillDeselectButton" class="compact" type="button" data-command="newLayerFillDeselect">NewLayer+Fill+Deselect</button>
+        </div>
+        <div class="button-row">
+          <button id="fillSelectionButton" type="button" data-action="fillSelectionWithForegroundColor">Fill Selection</button>
+          <button id="fillAndDeselectButton" type="button" data-action="fillSelectionAndDeselect">Fill + Deselect</button>
+          <button id="newLayerFillButton" type="button" data-action="newLayerAndFill">New Layer + Fill</button>
+          <button id="newLayerFillDeselectButton" type="button" data-action="newLayerAndFillAndDeselect">New Layer + Fill + Deselect</button>
+        </div>
+      </div>
     </div>
 
     <div class="section">
-      <h2>Selection Watcher</h2>
-      <p>Experimental / Disabled.</p>
-      <div class="button-row">
-        <button id="startWatchButton" type="button" disabled>Start Watch</button>
-        <button id="stopWatchButton" type="button" disabled>Stop Watch</button>
-        <button id="clearWatchLogButton" type="button" disabled>Clear Watch Log</button>
+      <div class="section-title" id="developerToggle" role="button" tabindex="0" aria-expanded="false" aria-controls="developerContent">
+        <h2>Developer</h2>
+        <span class="section-muted">▸</span>
       </div>
-      <div id="watchLog" class="log-area" aria-live="polite"></div>
+      <div class="section-content is-collapsed" id="developerContent">
+        <div class="experimental-toggle">Event diagnostics and selection watcher are kept disabled for safety.</div>
+        <div class="button-row">
+          <button id="startEventLogButton" type="button">Start Event Log</button>
+          <button id="stopEventLogButton" type="button">Stop Event Log</button>
+          <button id="clearEventLogButton" type="button">Clear Log</button>
+        </div>
+        <div id="eventLog" class="log-area" aria-live="polite"></div>
+        <div class="button-row">
+          <button id="startWatchButton" type="button" disabled>Start Watch</button>
+          <button id="stopWatchButton" type="button" disabled>Stop Watch</button>
+          <button id="clearWatchLogButton" type="button" disabled>Clear Watch Log</button>
+        </div>
+        <div id="watchLog" class="log-area" aria-live="polite"></div>
+      </div>
     </div>
+
+    <div id="statusText" class="status" role="status" aria-live="polite">Ready.</div>
   </div>
 
   <script src="storage/settings.js"></script>

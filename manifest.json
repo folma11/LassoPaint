@@ -2,7 +2,7 @@
   "manifestVersion": 5,
   "id": "com.lassopaint.plugin",
   "name": "Lasso Paint",
-  "version": "0.8.0",
+  "version": "0.12.3",
   "main": "index.html",
   "host": {
     "app": "PS",
@@ -15,6 +15,16 @@
       "label": {
         "default": "Lasso Paint"
       },
+      "icons": [
+        {
+          "width": 23,
+          "height": 23,
+          "path": "assets/icons/icon-23.png",
+          "scale": [1],
+          "theme": ["all"],
+          "species": ["toolbar"]
+        }
+      ],
       "minimumSize": {
         "width": 320,
         "height": 240
@@ -31,6 +41,16 @@
         "width": 360,
         "height": 640
       }
+    }
+  ],
+  "icons": [
+    {
+      "width": 48,
+      "height": 48,
+      "path": "assets/icons/icon-48.png",
+      "scale": [1],
+      "theme": ["all"],
+      "species": ["pluginList"]
     }
   ]
 }

@@ -1,5 +1,101 @@
 # Changelog
 
+## 0.12.3 - 2026-07-09
+
+- Reworked the README into the final public landing page with centered branding, badges, workflow media, screenshots, installation, usage, safety, roadmap, UXP, contributing, and license sections.
+- Updated project metadata to version 0.12.3.
+
+## 0.12.2 - 2026-07-08
+
+- Polished the README with a tighter branded introduction, dedicated screenshot placeholders, and more scannable feature descriptions.
+- Simplified usage into a three-step workflow and separated the roadmap into Current and Coming Next sections.
+
+## 0.12.1 - 2026-07-08
+
+- Switched the Photoshop panel header from the SVG logo to the UXP-compatible `assets/logo/logo.png` asset.
+- Added compact, constrained raster-logo sizing while keeping Run Fill near the top and leaving README and manifest icon assets unchanged.
+- Refined the header with a 36px centered logo and tighter spacing so branding stays subtle and Run Fill remains the visual focus.
+
+## 0.12.0 - 2026-07-08
+
+- Integrated the finalized Lasso Paint logo, LP mark, and Photoshop plugin icons from the shared `assets/` structure.
+- Added a compact branded panel header and updated the README to use the official logo.
+- Added brand usage, color, clear-space, and minimum-size guidance in `docs/branding.md` without changing plugin behavior.
+- Corrected the panel header to display the official `assets/logo/logo.svg` artwork in a compact horizontal layout.
+
+## 0.11.1 - 2026-07-08
+
+- Redesigned the README as a clean GitHub landing page with centered branding, concise product messaging, installation and usage guidance, safety notes, and roadmap details.
+- Added Markdown placeholders for Main Panel, Advanced Panel, and Photoshop Workflow screenshots.
+
+## 0.11.0 - 2026-07-08
+
+- Replaced the scaffold README with a polished, public-facing guide to Lasso Paint's purpose, features, installation, usage, safety, roadmap, and development structure.
+- Added a placeholder for future screenshots and clarified the path toward a stable v1.0 workflow and future Auto Fill research.
+
+## 0.10.9 - 2026-07-08
+
+- Forced enabled Workflow and Safety checkbox labels to use the normal `#E0E0E0` text color in Photoshop UXP.
+- Overrode the host text-fill styling at the existing checkbox-label selectors while keeping the Safety description muted and disabled colors limited to disabled controls.
+
+## 0.10.8 - 2026-07-08
+
+- Increased Workflow and Safety checkbox-label readability using the normal enabled text color.
+- Kept the Safety description muted, gave status text its own mid-level contrast, and reserved disabled styling for disabled controls.
+
+## 0.10.7 - 2026-07-08
+
+- Moved Advanced and Developer accordion event binding into the external panel event module used by Photoshop UXP.
+- Matched the accordion handlers to the existing HTML IDs and kept both sections collapsed by default.
+- Preserved Advanced quick commands, safe Developer controls, fill logic, settings storage, and readable checkbox labels.
+
+## 0.10.6 - 2026-07-08
+
+- Restored reliable expand/collapse interaction for the Advanced and Developer sections in Photoshop UXP.
+- Kept both sections collapsed by default and preserved all existing quick commands and safe Developer controls.
+- Increased enabled checkbox-label contrast against the dark panel background.
+
+## 0.10.4 - 2026-07-08
+
+- Restored all three visible Workflow option rows with UXP-compatible flex layout and native checkbox rendering.
+- Preserved the existing checkbox IDs, settings persistence, and command behavior.
+
+## 0.10.3 - 2026-07-08
+
+- Made Workflow checkboxes clearly visible in both unchecked and checked states on the dark panel background.
+- Improved checkbox-label alignment and preserved all existing settings behavior.
+
+## 0.10.2 - 2026-07-08
+
+- Restyled the panel with a Photoshop-like dark gray palette, stronger content hierarchy, and a blue primary Run Fill action.
+- Improved responsive spacing, button wrapping, checkbox alignment, typography, subtle separators, and muted success, warning, and error colors.
+- Centralized colors and spacing in CSS variables while preserving all behavior and the collapsed Advanced and Developer sections.
+
+## 0.10.1 - 2026-07-08
+
+- Softened the warning styling and made it conditional on the Allow fill without selection setting.
+- Removed the large workflow card background and slightly enlarged the Run Fill button for easier tapping.
+- Kept Advanced and Developer collapsed by default and preserved all existing functionality.
+
+## 0.11.0 - 2026-07-08
+
+- Simplified the panel to feel more like a native Photoshop workspace with lighter headings, more breathing room, and a more focused primary action.
+- Removed extra descriptive copy, grouped workflow controls under a compact heading, and moved status text to the bottom of the panel.
+- Kept Advanced and Developer collapsed by default and preserved all existing functionality.
+
+## 0.10.0 - 2026-07-08
+
+- Simplified the startup UI by collapsing Advanced and Developer sections by default.
+- Kept the existing fill workflow, settings, quick commands, and developer/debug controls available behind the collapsible sections.
+- Preserved localStorage-backed settings and the disabled watcher behavior.
+
+## 0.9.0 - 2026-07-08
+
+- Cleaned up the panel layout for daily drawing use with a clearer hierarchy: Main Action, Settings, Quick Commands, and Experimental.
+- Made Run Fill the primary action and kept Quick Commands compact and easy to scan.
+- Grouped the settings and warning text more clearly and marked diagnostics and the watcher as disabled experimental controls.
+- Kept all existing command behavior, settings persistence, and quick-command routing intact.
+
 ## 0.8.0 - 2026-07-08
 
 - Added a new Quick Commands section with compact buttons for Fill, Fill+Deselect, NewLayer+Fill, and NewLayer+Fill+Deselect.
