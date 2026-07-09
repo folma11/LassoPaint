@@ -5,13 +5,14 @@
     const commands = [];
     const newLayer = Boolean(options && options.newLayer);
     const deselect = Boolean(options && options.deselect);
+    const opacity = options && options.opacity ? options.opacity : 100;
 
     if (newLayer && batchPlayModule && typeof batchPlayModule.buildCreateNewPixelLayerCommand === 'function') {
       commands.push(...batchPlayModule.buildCreateNewPixelLayerCommand());
     }
 
     if (batchPlayModule && typeof batchPlayModule.buildFillSelectionCommand === 'function') {
-      commands.push(...batchPlayModule.buildFillSelectionCommand());
+      commands.push(...batchPlayModule.buildFillSelectionCommand(opacity));
     }
 
     if (deselect && batchPlayModule && typeof batchPlayModule.buildDeselectSelectionCommand === 'function') {

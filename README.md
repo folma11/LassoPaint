@@ -14,7 +14,7 @@ A lightweight Adobe Photoshop UXP plugin that streamlines the selection fill wor
 
 <p align="center">
 
-<img src="https://img.shields.io/badge/version-v0.15.17-blue" alt="Version">
+<img src="https://img.shields.io/badge/version-v0.16.0-blue" alt="Version">
 <img src="https://img.shields.io/badge/license-MIT-green" alt="MIT License">
 <img src="https://img.shields.io/badge/Adobe-Photoshop-31A8FF?logo=adobephotoshop&logoColor=white" alt="Adobe Photoshop">
 <img src="https://img.shields.io/badge/UXP-Plugin-orange?logo=adobe&logoColor=white" alt="UXP Plugin">
@@ -59,6 +59,10 @@ Clear the active selection automatically after a fill or erase completes.
 ### Selection Guard
 
 Skip actions when no active selection can be confirmed.
+
+### Fill Opacity
+
+Choose fill opacity in 20% steps from 20 to 100.
 
 ### Advanced Quick Commands
 
@@ -106,6 +110,7 @@ Optional settings:
 - **Fill** fills new selections with the foreground color.
 - **Erase** clears new selections to transparency.
 - **OFF** disables automatic actions.
+- **Opacity** controls fill strength in 20% steps.
 - **New Layer before Fill** creates a new layer before filling in Fill mode.
 - **Deselect after Action** clears the selection after filling or erasing.
 

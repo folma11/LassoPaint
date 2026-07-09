@@ -78,6 +78,7 @@
       const eraseSelectionButton = document.getElementById('eraseSelectionButton');
       const newLayerCheckbox = document.getElementById('newLayerCheckbox');
       const deselectCheckbox = document.getElementById('deselectCheckbox');
+      const opacityButtons = Array.prototype.slice.call(document.querySelectorAll('.opacity-option'));
       const quickCommandButtons = [
         document.getElementById('quickFillButton'),
         document.getElementById('quickFillDeselectButton'),
@@ -103,10 +104,28 @@
         });
       }
 
+      function normalizeOpacity(value) {
+        const opacity = Number(value);
+        return [20, 40, 60, 80, 100].indexOf(opacity) !== -1 ? opacity : 100;
+      }
+
+      function getCurrentOpacity() {
+        const selected = opacityButtons.find((button) => button.getAttribute('aria-pressed') === 'true');
+        return normalizeOpacity(selected ? selected.getAttribute('data-opacity') : 100);
+      }
+
+      function setOpacityButtonState(opacity) {
+        const normalizedOpacity = normalizeOpacity(opacity);
+        opacityButtons.forEach((button) => {
+          button.setAttribute('aria-pressed', normalizeOpacity(button.getAttribute('data-opacity')) === normalizedOpacity ? 'true' : 'false');
+        });
+      }
+
       function getCurrentFillOptions() {
         return {
           newLayer: newLayerCheckbox ? Boolean(newLayerCheckbox.checked) : false,
-          deselect: deselectCheckbox ? Boolean(deselectCheckbox.checked) : false
+          deselect: deselectCheckbox ? Boolean(deselectCheckbox.checked) : false,
+          opacity: getCurrentOpacity()
         };
       }
 
@@ -195,6 +214,27 @@
         bindModeButton(autoFillModeButton, 'fill');
         bindModeButton(autoEraseModeButton, 'erase');
         bindModeButton(autoOffModeButton, 'off');
+      }
+
+      if (opacityButtons.length) {
+        setOpacityButtonState(readStorageString('lassopaint.fillOpacity', '100'));
+        opacityButtons.forEach((button) => {
+          const activate = () => {
+            const opacity = normalizeOpacity(button.getAttribute('data-opacity'));
+            setOpacityButtonState(opacity);
+            writeStorageString('lassopaint.fillOpacity', String(opacity));
+            syncAutoFillOptions();
+            console.info('[LassoPaint] Fill opacity saved.', opacity);
+          };
+
+          button.addEventListener('click', activate);
+          button.addEventListener('keydown', (event) => {
+            if (event.key === 'Enter' || event.key === ' ') {
+              event.preventDefault();
+              activate();
+            }
+          });
+        });
       }
 
       async function runCommandAction(commandName, buttonElement, fallbackLabel) {

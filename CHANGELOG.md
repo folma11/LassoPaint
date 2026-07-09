@@ -1,5 +1,22 @@
 # Changelog
 
+## 0.16.0 - 2026-07-09
+
+- Added Fill opacity controls with 20%, 40%, 60%, 80%, and 100% options.
+- Persisted the selected fill opacity in local storage.
+- Applied fill opacity to Auto Fill, Run Fill, and Advanced Quick Fill commands.
+- Updated project metadata to version 0.16.0.
+
+## 0.15.19 - 2026-07-09
+
+- Slightly reduced Auto Mode icon image size while keeping button dimensions unchanged.
+- Updated project metadata to version 0.15.19.
+
+## 0.15.18 - 2026-07-09
+
+- Slightly reduced Auto Mode button height while keeping the icon size unchanged.
+- Updated project metadata to version 0.15.18.
+
 ## 0.15.17 - 2026-07-09
 
 - Updated the Fill mode icon to a tilted paint-bucket style.

@@ -13,7 +13,7 @@
   let eventDiagnosticsEnabled = false;
   let eventDiagnosticsHandle = null;
   let autoMode = 'off';
-  let autoModeOptions = { newLayer: false, deselect: false };
+  let autoModeOptions = { newLayer: false, deselect: false, opacity: 100 };
   let autoModeListener = null;
   let autoModeInProgress = false;
   let pendingAutoModeEvent = null;
@@ -78,9 +78,11 @@
   }
 
   function setAutoModeOptions(options) {
+    const opacity = Number(options && options.opacity);
     autoModeOptions = {
       newLayer: Boolean(options && options.newLayer),
-      deselect: Boolean(options && options.deselect)
+      deselect: Boolean(options && options.deselect),
+      opacity: [20, 40, 60, 80, 100].indexOf(opacity) !== -1 ? opacity : 100
     };
   }
 
@@ -106,6 +108,7 @@
         : await runConfiguredFill({
           newLayer: autoModeOptions.newLayer,
           deselect: autoModeOptions.deselect,
+          opacity: autoModeOptions.opacity,
           skipSelectionKey: lastAutoModeSelectionKey
         });
 
@@ -210,20 +213,25 @@
     setAutoModeOptions(options);
   }
 
-  async function fillSelectionWithForegroundColor() {
-    return runConfiguredFill({ newLayer: false, deselect: false });
+  function getFillOpacity(options) {
+    const opacity = Number(options && options.opacity);
+    return [20, 40, 60, 80, 100].indexOf(opacity) !== -1 ? opacity : 100;
   }
 
-  async function fillSelectionAndDeselect() {
-    return runConfiguredFill({ newLayer: false, deselect: true });
+  async function fillSelectionWithForegroundColor(options) {
+    return runConfiguredFill({ newLayer: false, deselect: false, opacity: getFillOpacity(options) });
   }
 
-  async function newLayerAndFill() {
-    return runConfiguredFill({ newLayer: true, deselect: false });
+  async function fillSelectionAndDeselect(options) {
+    return runConfiguredFill({ newLayer: false, deselect: true, opacity: getFillOpacity(options) });
   }
 
-  async function newLayerAndFillAndDeselect() {
-    return runConfiguredFill({ newLayer: true, deselect: true });
+  async function newLayerAndFill(options) {
+    return runConfiguredFill({ newLayer: true, deselect: false, opacity: getFillOpacity(options) });
+  }
+
+  async function newLayerAndFillAndDeselect(options) {
+    return runConfiguredFill({ newLayer: true, deselect: true, opacity: getFillOpacity(options) });
   }
 
   async function eraseSelection() {
@@ -278,10 +286,10 @@
 
   const commandRegistry = {
     runFill: (options) => runConfiguredFill(options),
-    fill: () => fillSelectionWithForegroundColor(),
-    fillDeselect: () => fillSelectionAndDeselect(),
-    newLayerFill: () => newLayerAndFill(),
-    newLayerFillDeselect: () => newLayerAndFillAndDeselect(),
+    fill: (options) => fillSelectionWithForegroundColor(options),
+    fillDeselect: (options) => fillSelectionAndDeselect(options),
+    newLayerFill: (options) => newLayerAndFill(options),
+    newLayerFillDeselect: (options) => newLayerAndFillAndDeselect(options),
     erase: (options) => runConfiguredErase({ deselect: Boolean(options && options.deselect) })
   };
 

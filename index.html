@@ -183,7 +183,7 @@
 
     .primary-split {
       width: 100%;
-      min-height: 42px;
+      min-height: 38px;
       display: flex;
       flex-direction: row;
       gap: var(--space-1);
@@ -203,8 +203,8 @@
 
     .mode-btn {
       width: 42px;
-      height: 42px;
-      min-height: 42px;
+      height: 38px;
+      min-height: 38px;
       padding: 0;
       margin: 0;
       display: flex;
@@ -241,8 +241,8 @@
     }
 
     .mode-icon-wrap {
-      width: 22px;
-      height: 22px;
+      width: 20px;
+      height: 20px;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -250,8 +250,8 @@
     }
 
     .mode-icon {
-      width: 22px;
-      height: 22px;
+      width: 20px;
+      height: 20px;
       display: block;
       object-fit: contain;
       background: transparent;
@@ -334,6 +334,85 @@
       margin-bottom: var(--space-1);
     }
 
+    .opacity-control {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-1);
+      margin: var(--space-1) 0 var(--space-3);
+    }
+
+    .opacity-options {
+      width: 100%;
+      display: flex;
+      align-items: stretch;
+      gap: 0;
+      margin: 0;
+      padding: 0;
+    }
+
+    .opacity-option {
+      box-sizing: border-box;
+      flex: 1 1 0;
+      width: auto;
+      height: 30px;
+      min-width: 42px;
+      min-height: 30px;
+      padding: 0;
+      margin: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      appearance: none;
+      -webkit-appearance: none;
+      border: 1px solid var(--color-separator);
+      border-radius: var(--control-radius);
+      background: var(--color-surface-pressed);
+      color: var(--color-text-muted);
+      -webkit-text-fill-color: var(--color-text-muted);
+      font-size: 11px;
+      font-weight: 600;
+      user-select: none;
+      line-height: 1;
+    }
+
+    .opacity-option + .opacity-option {
+      margin-left: -1px;
+    }
+
+    .opacity-option:first-child {
+      border-top-right-radius: 0;
+      border-bottom-right-radius: 0;
+    }
+
+    .opacity-option:not(:first-child):not(:last-child) {
+      border-radius: 0;
+    }
+
+    .opacity-option:last-child {
+      border-top-left-radius: 0;
+      border-bottom-left-radius: 0;
+    }
+
+    .opacity-option:hover {
+      background: var(--color-surface-hover);
+      color: var(--color-text);
+      -webkit-text-fill-color: var(--color-text);
+    }
+
+    .opacity-option:focus-visible {
+      outline: 2px solid var(--color-focus);
+      outline-offset: 1px;
+    }
+
+    .opacity-option[aria-pressed="true"] {
+      background: var(--color-accent);
+      border-color: var(--color-accent);
+      color: var(--color-text-heading);
+      -webkit-text-fill-color: var(--color-text-heading);
+    }
+
     .workflow-option {
       display: flex;
       align-items: center;
@@ -404,6 +483,7 @@
         flex-basis: 100%;
       }
     }
+
   </style>
 </head>
 <body>
@@ -431,6 +511,16 @@
         <span class="mode-icon-wrap" aria-hidden="true">
           <img class="mode-icon" src="assets/icons/mode-off.png" alt="">
         </span>
+      </div>
+    </div>
+
+    <div class="opacity-control" aria-label="Fill opacity">
+      <div class="opacity-options" role="group" aria-label="Fill opacity">
+        <button class="opacity-option" type="button" data-opacity="20" aria-label="Fill opacity 20%" aria-pressed="false">20</button>
+        <button class="opacity-option" type="button" data-opacity="40" aria-label="Fill opacity 40%" aria-pressed="false">40</button>
+        <button class="opacity-option" type="button" data-opacity="60" aria-label="Fill opacity 60%" aria-pressed="false">60</button>
+        <button class="opacity-option" type="button" data-opacity="80" aria-label="Fill opacity 80%" aria-pressed="false">80</button>
+        <button class="opacity-option" type="button" data-opacity="100" aria-label="Fill opacity 100%" aria-pressed="true">100</button>
       </div>
     </div>
 

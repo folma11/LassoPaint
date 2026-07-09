@@ -1,7 +1,13 @@
 (function (global) {
   'use strict';
 
-  function buildFillSelectionCommand() {
+  function normalizeOpacity(value) {
+    const numeric = Number(value);
+    return [20, 40, 60, 80, 100].indexOf(numeric) !== -1 ? numeric : 100;
+  }
+
+  function buildFillSelectionCommand(opacity) {
+    const fillOpacity = normalizeOpacity(opacity);
     return [{
       _obj: 'fill',
       using: {
@@ -10,7 +16,7 @@
       },
       opacity: {
         _unit: 'percentUnit',
-        _value: 100
+        _value: fillOpacity
       },
       mode: {
         _enum: 'blendMode',

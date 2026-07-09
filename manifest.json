@@ -2,7 +2,7 @@
   "manifestVersion": 5,
   "id": "com.lassopaint.plugin",
   "name": "Lasso Paint",
-  "version": "0.15.17",
+  "version": "0.16.0",
   "main": "index.html",
   "host": {
     "app": "PS",
@@ -19,10 +19,16 @@
         {
           "width": 23,
           "height": 23,
-          "path": "assets/icons/icon-23.png",
-          "scale": [1],
-          "theme": ["all"],
-          "species": ["toolbar"]
+          "path": "assets/icons/panel-dark.png",
+          "scale": [1, 2],
+          "theme": ["darkest", "dark", "medium"]
+        },
+        {
+          "width": 23,
+          "height": 23,
+          "path": "assets/icons/panel-light.png",
+          "scale": [1, 2],
+          "theme": ["lightest", "light"]
         }
       ],
       "minimumSize": {
@@ -44,6 +50,22 @@
     }
   ],
   "icons": [
+    {
+      "width": 23,
+      "height": 23,
+      "path": "assets/icons/panel-dark.png",
+      "scale": [1, 2],
+      "theme": ["darkest", "dark", "medium"],
+      "species": ["generic"]
+    },
+    {
+      "width": 23,
+      "height": 23,
+      "path": "assets/icons/panel-light.png",
+      "scale": [1, 2],
+      "theme": ["lightest", "light"],
+      "species": ["generic"]
+    },
     {
       "width": 48,
       "height": 48,
