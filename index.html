@@ -97,7 +97,8 @@
       line-height: 1.25;
     }
 
-    .brand + .primary {
+    .brand + .primary,
+    .brand + .primary-split {
       margin-top: calc(var(--space-1) * -1);
     }
 
@@ -178,6 +179,40 @@
     .panel button.compact {
       padding: 5px var(--space-2);
       font-size: 12px;
+    }
+
+    .primary-split {
+      width: 100%;
+      min-height: 48px;
+      display: flex;
+      flex-direction: row;
+      gap: var(--space-1);
+      margin: var(--space-1) 0;
+      overflow: hidden;
+    }
+
+    .primary-split > button {
+      flex: 1 1 33%;
+      min-width: 0;
+    }
+
+    .panel button.toggle {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--space-1);
+      min-height: 48px;
+      padding: 6px var(--space-1);
+      font-size: 13px;
+      font-weight: 600;
+      text-align: center;
+      white-space: nowrap;
+    }
+
+    .panel button.toggle[aria-pressed="true"] {
+      background: var(--color-accent);
+      border-color: var(--color-accent);
+      color: var(--color-text-heading);
     }
 
     .status {
@@ -338,14 +373,17 @@
       </div>
     </header>
 
-    <button id="runFillButton" class="primary" type="button">Run Fill</button>
+    <div class="primary-split" role="group" aria-label="Auto Mode">
+      <button id="autoFillModeButton" class="toggle" type="button" aria-pressed="false">Fill</button>
+      <button id="autoEraseModeButton" class="toggle" type="button" aria-pressed="false">Erase</button>
+      <button id="autoOffModeButton" class="toggle" type="button" aria-pressed="true">OFF</button>
+    </div>
 
     <div class="section">
       <div class="settings-row">
         <h2>Workflow</h2>
-        <label class="workflow-option" for="autoFillCheckbox"><input id="autoFillCheckbox" type="checkbox"><span>Auto Fill</span></label>
         <label class="workflow-option" for="newLayerCheckbox"><input id="newLayerCheckbox" type="checkbox"><span>New Layer before fill</span></label>
-        <label class="workflow-option" for="deselectCheckbox"><input id="deselectCheckbox" type="checkbox"><span>Deselect after fill</span></label>
+        <label class="workflow-option" for="deselectCheckbox"><input id="deselectCheckbox" type="checkbox"><span>Deselect after action</span></label>
       </div>
     </div>
 
@@ -355,6 +393,10 @@
         <span class="section-muted">▸</span>
       </div>
       <div class="section-content is-collapsed" id="advancedContent">
+        <div class="button-row">
+          <button id="runFillButton" type="button">Run Fill</button>
+          <button id="eraseSelectionButton" type="button">Erase Selection</button>
+        </div>
         <div class="button-row">
           <button id="quickFillButton" class="compact" type="button" data-command="fill">Fill</button>
           <button id="quickFillDeselectButton" class="compact" type="button" data-command="fillDeselect">Fill+Deselect</button>
@@ -393,6 +435,7 @@
   <script src="photoshop/batchplay.js"></script>
   <script src="photoshop/modal.js"></script>
   <script src="commands/fill.js"></script>
+  <script src="commands/erase.js"></script>
   <script src="commands/deselect.js"></script>
   <script src="commands/layer.js"></script>
   <script src="photoshop/bridge.js"></script>

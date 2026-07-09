@@ -74,6 +74,115 @@
     }).join('|');
   }
 
+  function getDescriptorEnumValue(value) {
+    if (value && typeof value === 'object' && '_value' in value) {
+      return value._value;
+    }
+    return value;
+  }
+
+  function descriptorSupportsPixelErase(descriptor) {
+    if (!descriptor || typeof descriptor !== 'object') {
+      return false;
+    }
+
+    const locking = descriptor.layerLocking || {};
+    if (
+      locking.protectAll === true ||
+      locking.protectComposite === true ||
+      locking.protectTransparency === true
+    ) {
+      return false;
+    }
+
+    const layerKind = getDescriptorEnumValue(descriptor.layerKind || descriptor.kind);
+    if (layerKind === undefined || layerKind === null || layerKind === '') {
+      return true;
+    }
+
+    return layerKind === 1 ||
+      layerKind === 'pixelLayer' ||
+      layerKind === 'pixelSheet' ||
+      layerKind === 'normal';
+  }
+
+  async function validateSelectionAndLayer(batchPlay, actionName, selectionCommands, options) {
+    let layerSkipped = false;
+    let selectionKey = '';
+
+    if (options && Array.isArray(options.layerCommands) && options.layerCommands.length) {
+      let layerResult = null;
+
+      try {
+        layerResult = await batchPlay(options.layerCommands, { synchronous: true });
+      } catch (error) {
+        console.warn(`[LassoPaint] Active layer check failed before ${actionName}.`, error);
+        layerSkipped = true;
+        return { hasSelection: false, layerSkipped, selectionKey };
+      }
+
+      const canErase = Array.isArray(layerResult) && descriptorSupportsPixelErase(layerResult[0]);
+      if (!canErase) {
+        console.warn(`[LassoPaint] Active layer cannot be erased safely. ${actionName} skipped.`);
+        layerSkipped = true;
+        return { hasSelection: false, layerSkipped, selectionKey };
+      }
+    }
+
+    let selectionResult = null;
+
+    try {
+      selectionResult = await batchPlay(selectionCommands, { synchronous: true });
+    } catch (error) {
+      console.warn(`[LassoPaint] Selection check failed before ${actionName}.`, error);
+      return { hasSelection: false, layerSkipped, selectionKey };
+    }
+
+    const hasSelection = Array.isArray(selectionResult) && descriptorHasSelectionBounds(selectionResult[0]);
+    if (!hasSelection) {
+      console.warn(`[LassoPaint] No active selection before ${actionName}.`);
+      return { hasSelection: false, layerSkipped, selectionKey };
+    }
+
+    selectionKey = getSelectionBoundsKey(selectionResult[0]);
+    if (options && options.skipSelectionKey && selectionKey === options.skipSelectionKey) {
+      console.info(`[LassoPaint] Selection already handled before ${actionName}.`);
+      return { hasSelection: false, layerSkipped, selectionKey };
+    }
+
+    return { hasSelection: true, layerSkipped, selectionKey };
+  }
+
+  function createSkippedResult(validation, actionName, options) {
+    if (validation && validation.layerSkipped) {
+      return {
+        success: false,
+        message: options && options.layerSkippedMessage ? options.layerSkippedMessage : `${actionName} skipped. Use an unlocked pixel layer.`,
+        selectionKey: validation.selectionKey || ''
+      };
+    }
+
+    if (
+      validation &&
+      validation.selectionKey &&
+      options &&
+      options.skipSelectionKey &&
+      validation.selectionKey === options.skipSelectionKey
+    ) {
+      return {
+        success: false,
+        message: options.duplicateMessage || 'Selection already handled. Fill skipped.',
+        selectionKey: validation.selectionKey
+      };
+    }
+
+    return {
+      success: false,
+      message: options && options.skippedMessage ? options.skippedMessage : 'No active selection. Fill skipped.',
+      selectionKey: validation && validation.selectionKey ? validation.selectionKey : ''
+    };
+  }
+
   async function runSelectionGuardedBatchPlay(commands, actionName, selectionCommands, options) {
     const photoshop = getPhotoshopApi();
     if (!photoshop || !photoshop.core || !photoshop.app) {
@@ -95,28 +204,12 @@
 
     try {
       let fillCompleted = false;
-      let selectionKey = '';
+      let validation = { hasSelection: false, layerSkipped: false, selectionKey: '' };
 
       console.info(`[LassoPaint] Checking active selection before ${actionName}.`);
       await photoshop.core.executeAsModal(async () => {
-        let selectionResult = null;
-
-        try {
-          selectionResult = await batchPlay(selectionCommands, { synchronous: true });
-        } catch (error) {
-          console.warn('[LassoPaint] Selection check failed. Fill skipped.', error);
-          return;
-        }
-
-        const hasSelection = Array.isArray(selectionResult) && descriptorHasSelectionBounds(selectionResult[0]);
-        if (!hasSelection) {
-          console.warn('[LassoPaint] No active selection. Fill skipped.');
-          return;
-        }
-
-        selectionKey = getSelectionBoundsKey(selectionResult[0]);
-        if (options && options.skipSelectionKey && selectionKey === options.skipSelectionKey) {
-          console.info('[LassoPaint] Selection already handled. Fill skipped.');
+        validation = await validateSelectionAndLayer(batchPlay, actionName, selectionCommands, options);
+        if (!validation.hasSelection) {
           return;
         }
 
@@ -125,14 +218,96 @@
       }, { commandName: actionName });
 
       if (!fillCompleted) {
-        if (selectionKey && options && options.skipSelectionKey && selectionKey === options.skipSelectionKey) {
-          return { success: false, message: 'Selection already handled. Fill skipped.', selectionKey };
-        }
-
-        return { success: false, message: 'No active selection. Fill skipped.' };
+        return createSkippedResult(validation, actionName, options);
       }
 
-      return { success: true, message: `${actionName} completed.`, selectionKey };
+      return { success: true, message: `${actionName} completed.`, selectionKey: validation.selectionKey };
+    } catch (error) {
+      console.error(`[LassoPaint] ${actionName} failed.`, error);
+      return {
+        success: false,
+        message: error && error.message ? error.message : `${actionName} failed.`
+      };
+    }
+  }
+
+  async function runSelectionGuardedDomAction(actionName, selectionCommands, options) {
+    const photoshop = getPhotoshopApi();
+    if (!photoshop || !photoshop.core || !photoshop.app) {
+      return { success: false, message: 'Photoshop API is unavailable.' };
+    }
+
+    const batchPlay = photoshop.app.batchPlay;
+    if (typeof batchPlay !== 'function') {
+      return { success: false, message: 'Photoshop batchPlay API is unavailable.' };
+    }
+
+    if (!Array.isArray(selectionCommands) || !selectionCommands.length) {
+      return { success: false, message: options && options.skippedMessage ? options.skippedMessage : 'No active selection. Fill skipped.' };
+    }
+
+    try {
+      let actionCompleted = false;
+      let unsupported = false;
+      let actionFailed = false;
+      let validation = { hasSelection: false, layerSkipped: false, selectionKey: '' };
+
+      console.info(`[LassoPaint] Checking active selection before ${actionName}.`);
+      await photoshop.core.executeAsModal(async () => {
+        validation = await validateSelectionAndLayer(batchPlay, actionName, selectionCommands, options);
+        if (!validation.hasSelection) {
+          return;
+        }
+
+        const document = photoshop.app.activeDocument;
+        const activeLayer = document &&
+          Array.isArray(document.activeLayers) &&
+          document.activeLayers.length
+          ? document.activeLayers[0]
+          : null;
+
+        if (!activeLayer || typeof activeLayer.clear !== 'function') {
+          unsupported = true;
+          console.warn('[LassoPaint] Photoshop DOM layer.clear is unavailable.');
+          return;
+        }
+
+        try {
+          await activeLayer.clear();
+        } catch (error) {
+          actionFailed = true;
+          console.warn('[LassoPaint] Photoshop DOM layer.clear failed.', error);
+          return;
+        }
+
+        if (options && Array.isArray(options.afterCommands) && options.afterCommands.length) {
+          await batchPlay(options.afterCommands, { synchronous: true });
+        }
+
+        actionCompleted = true;
+      }, { commandName: actionName });
+
+      if (unsupported) {
+        return {
+          success: false,
+          message: options && options.unsupportedMessage ? options.unsupportedMessage : `${actionName} is unavailable.`,
+          selectionKey: validation.selectionKey
+        };
+      }
+
+      if (actionFailed) {
+        return {
+          success: false,
+          message: options && options.actionFailedMessage ? options.actionFailedMessage : `${actionName} failed.`,
+          selectionKey: validation.selectionKey
+        };
+      }
+
+      if (!actionCompleted) {
+        return createSkippedResult(validation, actionName, options);
+      }
+
+      return { success: true, message: `${actionName} completed.`, selectionKey: validation.selectionKey };
     } catch (error) {
       console.error(`[LassoPaint] ${actionName} failed.`, error);
       return {
@@ -144,7 +319,8 @@
 
   const ModalModule = {
     runModalBatchPlay,
-    runSelectionGuardedBatchPlay
+    runSelectionGuardedBatchPlay,
+    runSelectionGuardedDomAction
   };
 
   global.LassoPaintModal = ModalModule;

@@ -15,6 +15,18 @@
     }
   }
 
+  function readStorageString(key, fallback) {
+    return global.LassoPaintSettingsStorage && typeof global.LassoPaintSettingsStorage.readString === 'function'
+      ? global.LassoPaintSettingsStorage.readString(key, fallback)
+      : fallback;
+  }
+
+  function writeStorageString(key, value) {
+    if (global.LassoPaintSettingsStorage && typeof global.LassoPaintSettingsStorage.writeString === 'function') {
+      global.LassoPaintSettingsStorage.writeString(key, value);
+    }
+  }
+
   function bindCollapsibleSection(toggleId, contentId) {
     const toggle = document.getElementById(toggleId);
     const content = document.getElementById(contentId);
@@ -60,7 +72,10 @@
       bindCollapsibleSection('developerToggle', 'developerContent');
 
       const runFillButton = document.getElementById('runFillButton');
-      const autoFillCheckbox = document.getElementById('autoFillCheckbox');
+      const autoFillModeButton = document.getElementById('autoFillModeButton');
+      const autoEraseModeButton = document.getElementById('autoEraseModeButton');
+      const autoOffModeButton = document.getElementById('autoOffModeButton');
+      const eraseSelectionButton = document.getElementById('eraseSelectionButton');
       const newLayerCheckbox = document.getElementById('newLayerCheckbox');
       const deselectCheckbox = document.getElementById('deselectCheckbox');
       const quickCommandButtons = [
@@ -96,39 +111,86 @@
       }
 
       function syncAutoFillOptions() {
-        if (appContext && appContext.photoshop && typeof appContext.photoshop.setAutoFillOptions === 'function') {
-          appContext.photoshop.setAutoFillOptions(getCurrentFillOptions());
+        if (appContext && appContext.photoshop && typeof appContext.photoshop.setAutoModeOptions === 'function') {
+          appContext.photoshop.setAutoModeOptions(getCurrentFillOptions());
         }
       }
 
-      async function setAutoFillEnabled(enabled) {
-        if (!appContext || !appContext.photoshop || typeof appContext.photoshop.setAutoFillEnabled !== 'function') {
-          PanelUI.setStatus('Auto Fill is not available.', true);
-          if (autoFillCheckbox) {
-            autoFillCheckbox.checked = false;
-          }
+      function normalizeAutoMode(mode) {
+        return mode === 'fill' || mode === 'erase' ? mode : 'off';
+      }
+
+      function readInitialAutoMode() {
+        const mode = readStorageString('lassopaint.autoMode', '');
+        if (mode === 'fill' || mode === 'erase' || mode === 'off') {
+          return mode;
+        }
+
+        return readStorageBoolean('lassopaint.autoFill', false) ? 'fill' : 'off';
+      }
+
+      async function setAutoMode(mode) {
+        const normalizedMode = normalizeAutoMode(mode);
+        if (!appContext || !appContext.photoshop || typeof appContext.photoshop.setAutoMode !== 'function') {
+          PanelUI.setStatus('Auto Mode is not available.', true);
+          setAutoModeButtonState('off');
           return;
         }
 
-        const result = await appContext.photoshop.setAutoFillEnabled(enabled, getCurrentFillOptions());
+        const result = await appContext.photoshop.setAutoMode(normalizedMode, getCurrentFillOptions());
         if (result && result.success) {
-          PanelUI.setStatus(result.message || (enabled ? 'Auto Fill enabled.' : 'Auto Fill disabled.'), false);
+          setAutoModeButtonState(normalizedMode);
+          PanelUI.setStatus(result.message || 'Auto Mode updated.', false);
         } else {
-          PanelUI.setStatus(result && result.message ? result.message : 'Auto Fill failed.', true);
-          if (autoFillCheckbox) {
-            autoFillCheckbox.checked = false;
-          }
-          writeStorageBoolean('lassopaint.autoFill', false);
+          PanelUI.setStatus(result && result.message ? result.message : 'Auto Mode failed.', true);
+          setAutoModeButtonState('off');
+          writeStorageString('lassopaint.autoMode', 'off');
         }
       }
 
-      if (autoFillCheckbox) {
-        autoFillCheckbox.checked = readStorageBoolean('lassopaint.autoFill', false);
-        autoFillCheckbox.addEventListener('change', async (event) => {
-          const enabled = Boolean(event.target.checked);
-          writeStorageBoolean('lassopaint.autoFill', enabled);
-          await setAutoFillEnabled(enabled);
-        });
+      function getAutoModeButtonState() {
+        if (autoFillModeButton && autoFillModeButton.getAttribute('aria-pressed') === 'true') {
+          return 'fill';
+        }
+        if (autoEraseModeButton && autoEraseModeButton.getAttribute('aria-pressed') === 'true') {
+          return 'erase';
+        }
+        return 'off';
+      }
+
+      function setAutoModeButtonState(mode) {
+        const normalizedMode = normalizeAutoMode(mode);
+        if (autoFillModeButton) {
+          autoFillModeButton.setAttribute('aria-pressed', normalizedMode === 'fill' ? 'true' : 'false');
+        }
+        if (autoEraseModeButton) {
+          autoEraseModeButton.setAttribute('aria-pressed', normalizedMode === 'erase' ? 'true' : 'false');
+        }
+        if (autoOffModeButton) {
+          autoOffModeButton.setAttribute('aria-pressed', normalizedMode === 'off' ? 'true' : 'false');
+        }
+      }
+
+      if (autoFillModeButton || autoEraseModeButton || autoOffModeButton) {
+        setAutoModeButtonState(readInitialAutoMode());
+        if (autoFillModeButton) {
+          autoFillModeButton.addEventListener('click', async () => {
+            writeStorageString('lassopaint.autoMode', 'fill');
+            await setAutoMode('fill');
+          });
+        }
+        if (autoEraseModeButton) {
+          autoEraseModeButton.addEventListener('click', async () => {
+            writeStorageString('lassopaint.autoMode', 'erase');
+            await setAutoMode('erase');
+          });
+        }
+        if (autoOffModeButton) {
+          autoOffModeButton.addEventListener('click', async () => {
+            writeStorageString('lassopaint.autoMode', 'off');
+            await setAutoMode('off');
+          });
+        }
       }
 
       async function runCommandAction(commandName, buttonElement, fallbackLabel) {
@@ -226,9 +288,16 @@
         });
       }
 
+      if (eraseSelectionButton) {
+        eraseSelectionButton.addEventListener('click', async () => {
+          console.info('[LassoPaint] Erase Selection button clicked.');
+          await runCommandAction('erase', eraseSelectionButton, 'Erase Selection');
+        });
+      }
+
       syncAutoFillOptions();
-      if (autoFillCheckbox && autoFillCheckbox.checked) {
-        setAutoFillEnabled(true);
+      if (getAutoModeButtonState() !== 'off') {
+        setAutoMode(getAutoModeButtonState());
       }
 
       PanelUI.setStatus('Ready to run a fill workflow.', false);

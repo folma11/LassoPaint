@@ -4,6 +4,7 @@
   const BatchPlayModule = global.LassoPaintBatchPlay;
   const ModalModule = global.LassoPaintModal;
   const FillCommand = global.LassoPaintFillCommand;
+  const EraseCommand = global.LassoPaintEraseCommand;
   const DeselectCommand = global.LassoPaintDeselectCommand;
   const LayerCommand = global.LassoPaintLayerCommand;
 
@@ -11,12 +12,12 @@
 
   let eventDiagnosticsEnabled = false;
   let eventDiagnosticsHandle = null;
-  let autoFillEnabled = false;
-  let autoFillOptions = { newLayer: false, deselect: false };
-  let autoFillListener = null;
-  let autoFillInProgress = false;
-  let pendingAutoFillEvent = null;
-  let lastAutoFillSelectionKey = '';
+  let autoMode = 'off';
+  let autoModeOptions = { newLayer: false, deselect: false };
+  let autoModeListener = null;
+  let autoModeInProgress = false;
+  let pendingAutoModeEvent = null;
+  let lastAutoModeSelectionKey = '';
 
   function getPhotoshopApi() {
     if (typeof require === 'function') {
@@ -40,6 +41,14 @@
     }
 
     return FillCommand.createConfiguredFillCommand(options, BatchPlayModule, ModalModule);
+  }
+
+  async function runConfiguredErase(options) {
+    if (!EraseCommand || typeof EraseCommand.createConfiguredEraseCommand !== 'function') {
+      return { success: false, message: 'Erase command module is unavailable.' };
+    }
+
+    return EraseCommand.createConfiguredEraseCommand(options, BatchPlayModule, ModalModule);
   }
 
   function setStatus(message, isError) {
@@ -68,117 +77,137 @@
     }
   }
 
-  function setAutoFillOptions(options) {
-    autoFillOptions = {
+  function setAutoModeOptions(options) {
+    autoModeOptions = {
       newLayer: Boolean(options && options.newLayer),
       deselect: Boolean(options && options.deselect)
     };
   }
 
-  async function runAutoFillFromEvent(event, descriptor) {
-    if (!autoFillEnabled || !isSelectionNotification(event, descriptor)) {
+  async function runAutoModeFromEvent(event, descriptor) {
+    if (autoMode === 'off' || !isSelectionNotification(event, descriptor)) {
       return;
     }
 
-    if (autoFillInProgress) {
-      pendingAutoFillEvent = { event, descriptor };
-      console.info('[LassoPaint] Auto Fill queued latest selection event.');
+    if (autoModeInProgress) {
+      pendingAutoModeEvent = { event, descriptor };
+      console.info('[LassoPaint] Auto Mode queued latest selection event.');
       return;
     }
 
-    autoFillInProgress = true;
+    autoModeInProgress = true;
 
     try {
-      const result = await runConfiguredFill({
-        newLayer: autoFillOptions.newLayer,
-        deselect: autoFillOptions.deselect,
-        skipSelectionKey: lastAutoFillSelectionKey
-      });
-      if (!autoFillEnabled) {
+      const result = autoMode === 'erase'
+        ? await runConfiguredErase({
+          deselect: autoModeOptions.deselect,
+          skipSelectionKey: lastAutoModeSelectionKey
+        })
+        : await runConfiguredFill({
+          newLayer: autoModeOptions.newLayer,
+          deselect: autoModeOptions.deselect,
+          skipSelectionKey: lastAutoModeSelectionKey
+        });
+
+      if (autoMode === 'off') {
         return;
       }
 
       if (result && result.success) {
-        lastAutoFillSelectionKey = result.selectionKey || lastAutoFillSelectionKey;
-        setStatus('Auto Fill completed.', false);
-        console.info('[LassoPaint] Auto Fill completed.');
+        lastAutoModeSelectionKey = result.selectionKey || lastAutoModeSelectionKey;
+        setStatus(autoMode === 'erase' ? 'Auto Erase completed.' : 'Auto Fill completed.', false);
+        console.info(`[LassoPaint] Auto ${autoMode} completed.`);
       } else if (
         result &&
         result.message &&
         result.message !== 'No active selection. Fill skipped.' &&
-        result.message !== 'Selection already handled. Fill skipped.'
+        result.message !== 'No active selection. Erase skipped.' &&
+        result.message !== 'Selection already handled. Fill skipped.' &&
+        result.message !== 'Selection already handled. Erase skipped.'
       ) {
         setStatus(result.message, true);
-        console.warn('[LassoPaint] Auto Fill skipped.', result);
+        console.warn('[LassoPaint] Auto Mode skipped.', result);
       }
     } catch (error) {
-      setStatus('Auto Fill failed.', true);
-      console.error('[LassoPaint] Auto Fill failed.', error);
+      setStatus('Auto Mode failed.', true);
+      console.error('[LassoPaint] Auto Mode failed.', error);
     } finally {
-      autoFillInProgress = false;
+      autoModeInProgress = false;
 
-      if (autoFillEnabled && pendingAutoFillEvent) {
-        const nextEvent = pendingAutoFillEvent;
-        pendingAutoFillEvent = null;
-        runAutoFillFromEvent(nextEvent.event, nextEvent.descriptor);
+      if (autoMode !== 'off' && pendingAutoModeEvent) {
+        const nextEvent = pendingAutoModeEvent;
+        pendingAutoModeEvent = null;
+        runAutoModeFromEvent(nextEvent.event, nextEvent.descriptor);
       }
     }
   }
 
-  async function setAutoFillEnabled(enabled, options) {
+  async function setAutoMode(mode, options) {
     const photoshop = getPhotoshopApi();
     const action = photoshop && photoshop.action;
+    const nextMode = mode === 'fill' || mode === 'erase' ? mode : 'off';
 
-    setAutoFillOptions(options);
+    setAutoModeOptions(options);
 
     if (!action || typeof action.addNotificationListener !== 'function') {
-      autoFillEnabled = false;
-      return { success: false, message: 'Auto Fill events are unavailable in this environment.' };
+      autoMode = 'off';
+      return { success: false, message: 'Auto Mode events are unavailable in this environment.' };
     }
 
-    if (enabled && autoFillEnabled) {
-      return { success: true, message: 'Auto Fill already enabled.' };
+    if (nextMode !== 'off' && autoMode === nextMode) {
+      return { success: true, message: `Auto ${nextMode === 'erase' ? 'Erase' : 'Fill'} already enabled.` };
     }
 
-    if (!enabled && !autoFillEnabled) {
-      return { success: true, message: 'Auto Fill already disabled.' };
+    if (nextMode === 'off' && autoMode === 'off') {
+      return { success: true, message: 'Auto Mode already off.' };
     }
 
-    if (enabled) {
-      autoFillListener = (event, descriptor) => {
-        runAutoFillFromEvent(event, descriptor);
+    if (nextMode !== 'off' && autoMode === 'off') {
+      autoModeListener = (event, descriptor) => {
+        runAutoModeFromEvent(event, descriptor);
       };
 
       try {
-        await action.addNotificationListener(AUTO_FILL_EVENTS, autoFillListener);
-        autoFillEnabled = true;
-        pendingAutoFillEvent = null;
-        lastAutoFillSelectionKey = '';
-        return { success: true, message: 'Auto Fill enabled.' };
+        await action.addNotificationListener(AUTO_FILL_EVENTS, autoModeListener);
       } catch (error) {
-        autoFillEnabled = false;
-        autoFillListener = null;
-        console.error('[LassoPaint] Failed to enable Auto Fill.', error);
+        autoMode = 'off';
+        autoModeListener = null;
+        console.error('[LassoPaint] Failed to enable Auto Mode.', error);
         return {
           success: false,
-          message: error && error.message ? error.message : 'Failed to enable Auto Fill.'
+          message: error && error.message ? error.message : 'Failed to enable Auto Mode.'
         };
       }
     }
 
-    try {
-      if (typeof action.removeNotificationListener === 'function' && autoFillListener) {
-        await action.removeNotificationListener(AUTO_FILL_EVENTS, autoFillListener);
+    if (nextMode === 'off') {
+      try {
+        if (typeof action.removeNotificationListener === 'function' && autoModeListener) {
+          await action.removeNotificationListener(AUTO_FILL_EVENTS, autoModeListener);
+        }
+      } catch (error) {
+        console.warn('[LassoPaint] Failed to remove Auto Mode listener.', error);
       }
-    } catch (error) {
-      console.warn('[LassoPaint] Failed to remove Auto Fill listener.', error);
+
+      autoMode = 'off';
+      autoModeListener = null;
+      autoModeInProgress = false;
+      pendingAutoModeEvent = null;
+      return { success: true, message: 'Auto Mode off.' };
     }
 
-    autoFillEnabled = false;
-    autoFillListener = null;
-    autoFillInProgress = false;
-    pendingAutoFillEvent = null;
-    return { success: true, message: 'Auto Fill disabled.' };
+    autoMode = nextMode;
+    pendingAutoModeEvent = null;
+    lastAutoModeSelectionKey = '';
+    return { success: true, message: nextMode === 'erase' ? 'Auto Erase enabled.' : 'Auto Fill enabled.' };
+  }
+
+  async function setAutoFillEnabled(enabled, options) {
+    return setAutoMode(enabled ? 'fill' : 'off', options);
+  }
+
+  function setAutoFillOptions(options) {
+    setAutoModeOptions(options);
   }
 
   async function fillSelectionWithForegroundColor() {
@@ -195,6 +224,10 @@
 
   async function newLayerAndFillAndDeselect() {
     return runConfiguredFill({ newLayer: true, deselect: true });
+  }
+
+  async function eraseSelection() {
+    return runConfiguredErase({ deselect: false });
   }
 
   async function startEventDiagnostics() {
@@ -248,7 +281,8 @@
     fill: () => fillSelectionWithForegroundColor(),
     fillDeselect: () => fillSelectionAndDeselect(),
     newLayerFill: () => newLayerAndFill(),
-    newLayerFillDeselect: () => newLayerAndFillAndDeselect()
+    newLayerFillDeselect: () => newLayerAndFillAndDeselect(),
+    erase: (options) => runConfiguredErase({ deselect: Boolean(options && options.deselect) })
   };
 
   async function runCommand(commandName, options) {
@@ -266,7 +300,10 @@
     fillSelectionAndDeselect,
     newLayerAndFill,
     newLayerAndFillAndDeselect,
+    eraseSelection,
     runCommand,
+    setAutoMode,
+    setAutoModeOptions,
     setAutoFillEnabled,
     setAutoFillOptions,
     startEventDiagnostics,

@@ -14,7 +14,7 @@ A lightweight Adobe Photoshop UXP plugin that streamlines the selection fill wor
 
 <p align="center">
 
-<img src="https://img.shields.io/badge/version-v0.14.1-blue" alt="Version">
+<img src="https://img.shields.io/badge/version-v0.15.8-blue" alt="Version">
 <img src="https://img.shields.io/badge/license-MIT-green" alt="MIT License">
 <img src="https://img.shields.io/badge/Adobe-Photoshop-31A8FF?logo=adobephotoshop&logoColor=white" alt="Adobe Photoshop">
 <img src="https://img.shields.io/badge/UXP-Plugin-orange?logo=adobe&logoColor=white" alt="UXP Plugin">
@@ -44,21 +44,21 @@ Just a faster fill workflow.
 
 Fill the current selection with one focused command.
 
-### Auto Fill Mode
+### Auto Mode
 
-Fill automatically after a selection is created while Auto Fill is enabled.
+Fill or erase to transparency automatically after a selection is created.
 
 ### New Layer before Fill
 
 Create a new layer before filling without leaving the panel.
 
-### Deselect after Fill
+### Deselect after Action
 
-Clear the active selection automatically after the fill completes.
+Clear the active selection automatically after a fill or erase completes.
 
 ### Selection Guard
 
-Skip fill commands when no active selection can be confirmed.
+Skip actions when no active selection can be confirmed.
 
 ### Advanced Quick Commands
 
@@ -98,14 +98,18 @@ The advanced panel provides quick commands for repeated fill actions.
 ## Usage
 
 1. Create a selection.
-2. Click **Run Fill**.
+2. Choose **Fill**, **Erase**, or **OFF**.
 3. Continue drawing.
 
 Optional settings:
 
-- **Auto Fill** fills after a new selection is created.
-- **New Layer before Fill** creates a new layer before filling.
-- **Deselect after Fill** clears the selection after filling.
+- **Fill** fills new selections with the foreground color.
+- **Erase** clears new selections to transparency.
+- **OFF** disables automatic actions.
+- **New Layer before Fill** creates a new layer before filling in Fill mode.
+- **Deselect after Action** clears the selection after filling or erasing.
+
+Manual **Run Fill** and **Erase Selection** remain available in the Advanced section.
 
 When no active selection is found, Lasso Paint skips the workflow and leaves the layer unchanged.
 
@@ -115,7 +119,7 @@ When no active selection is found, Lasso Paint skips the workflow and leaves the
 ### Current
 
 - Stable fill workflow
-- Auto Fill Mode
+- Auto Mode
 - Native Photoshop UI
 - Advanced Quick Commands
 - Selection Guard

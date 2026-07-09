@@ -1,5 +1,76 @@
 # Changelog
 
+## 0.15.8 - 2026-07-09
+
+- Changed Erase mode to call `app.activeDocument.activeLayers[0].clear()` after the existing selection bounds guard.
+- Replaced unavailable `selection.clear()` handling with a layer clear workflow.
+- Standardized unsupported Erase targets to show `Cannot erase on this layer.`.
+- Updated project metadata to version 0.15.8.
+
+## 0.15.7 - 2026-07-09
+
+- Switched Erase mode from BatchPlay transparent fill to Photoshop DOM selection clearing.
+- Removed the Erase BatchPlay fill descriptor so Photoshop's Fill dialog is not invoked.
+- Used Lasso Draw's compiled script strings as a reference, especially its `clearSelection` path.
+- Updated project metadata to version 0.15.7.
+
+## 0.15.6 - 2026-07-09
+
+- Changed Erase mode from background-color fill to transparent fill so selections are cleared instead of painted white.
+- Kept the selection and layer guards before Erase to avoid unsafe no-selection actions.
+- Updated project metadata to version 0.15.6.
+
+## 0.15.5 - 2026-07-09
+
+- Changed Erase mode to use the stable background-color fill workflow instead of unsupported Photoshop clear/cut commands.
+- Kept selection and layer guards before Erase so unsupported targets are skipped before any action runs.
+- Updated project metadata to version 0.15.5.
+
+## 0.15.4 - 2026-07-09
+
+- Prevented Erase mode from invoking unavailable Photoshop cut/fill behavior on unsupported layers.
+- Added a layer safety check so Erase skips locked, background, or non-pixel layers before running the erase command.
+- Updated project metadata to version 0.15.4.
+
+## 0.15.3 - 2026-07-09
+
+- Changed Erase mode from transparent fill to a dialog-free cut action for selected pixels.
+- Updated project metadata to version 0.15.3.
+
+## 0.15.2 - 2026-07-09
+
+- Changed Erase mode to fill the active selection with transparency instead of invoking Photoshop's unavailable delete/clear command.
+- Updated project metadata to version 0.15.2.
+
+## 0.15.1 - 2026-07-09
+
+- Switched Erase mode from the unavailable clear command to a selection delete command.
+- Tightened the three-button Auto Mode layout so Fill, Erase, and OFF fit inside the panel.
+- Updated project metadata to version 0.15.1.
+
+## 0.15.0 - 2026-07-09
+
+- Replaced Auto Fill ON/OFF with an Auto Mode selector: Fill, Erase, and OFF.
+- Added Erase mode for automatically clearing pixels inside new selections.
+- Added a manual Erase Selection command in Advanced.
+- Renamed Deselect after fill to Deselect after action.
+- Migrated the old `lassopaint.autoFill=true` setting to Auto Mode Fill behavior.
+- Updated project metadata to version 0.15.0.
+
+## 0.14.3 - 2026-07-09
+
+- Split the primary Auto Fill control into separate ON and OFF buttons.
+- Kept Run Fill in the Advanced section as a fallback.
+- Updated project metadata to version 0.14.3.
+
+## 0.14.2 - 2026-07-09
+
+- Changed Auto Fill from a checkbox to an ON/OFF toggle button.
+- Moved Run Fill into the Advanced section as a fallback.
+- Promoted Auto Fill to the primary panel button location.
+- Preserved the existing Auto Fill setting and behavior while making the active state easier to see.
+- Updated project metadata to version 0.14.2.
+
 ## 0.14.1 - 2026-07-09
 
 - Improved Auto Fill responsiveness for rapid lasso workflows by removing the time-based cooldown.

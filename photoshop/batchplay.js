@@ -49,6 +49,20 @@
     }];
   }
 
+  function buildGetTargetLayerCommand() {
+    return [{
+      _obj: 'get',
+      _target: [{
+        _ref: 'layer',
+        _enum: 'ordinal',
+        _value: 'targetEnum'
+      }],
+      _options: {
+        dialogOptions: 'dontDisplay'
+      }
+    }];
+  }
+
   function buildGetSelectionBoundsCommand() {
     return [{
       _obj: 'get',
@@ -72,6 +86,7 @@
     buildFillSelectionCommand,
     buildDeselectSelectionCommand,
     buildCreateNewPixelLayerCommand,
+    buildGetTargetLayerCommand,
     buildGetSelectionBoundsCommand
   };
 
