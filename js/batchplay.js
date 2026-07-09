@@ -55,6 +55,26 @@
         },
         _isCommand: true
       }];
+    },
+
+    buildGetSelectionBoundsCommand() {
+      console.info('[LassoPaint] Building selection-bounds BatchPlay payload.');
+      return [{
+        _obj: 'get',
+        _target: [
+          {
+            _property: 'selection'
+          },
+          {
+            _ref: 'document',
+            _enum: 'ordinal',
+            _value: 'targetEnum'
+          }
+        ],
+        _options: {
+          dialogOptions: 'dontDisplay'
+        }
+      }];
     }
   };
 

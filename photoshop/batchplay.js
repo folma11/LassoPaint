@@ -49,10 +49,30 @@
     }];
   }
 
+  function buildGetSelectionBoundsCommand() {
+    return [{
+      _obj: 'get',
+      _target: [
+        {
+          _property: 'selection'
+        },
+        {
+          _ref: 'document',
+          _enum: 'ordinal',
+          _value: 'targetEnum'
+        }
+      ],
+      _options: {
+        dialogOptions: 'dontDisplay'
+      }
+    }];
+  }
+
   const BatchPlayModule = {
     buildFillSelectionCommand,
     buildDeselectSelectionCommand,
-    buildCreateNewPixelLayerCommand
+    buildCreateNewPixelLayerCommand,
+    buildGetSelectionBoundsCommand
   };
 
   global.LassoPaintBatchPlay = BatchPlayModule;

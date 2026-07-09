@@ -52,6 +52,15 @@
     }
   }
 
+  function descriptorHasSelectionBounds(descriptor) {
+    const selection = descriptor && (descriptor.selection || descriptor);
+    if (!selection || typeof selection !== 'object') {
+      return false;
+    }
+
+    return ['top', 'left', 'bottom', 'right'].every((key) => selection[key] !== undefined);
+  }
+
   async function emitSelectionWatcherUpdate() {
     if (!selectionWatcherActive) {
       return;
@@ -109,6 +118,67 @@
       }
     },
 
+    async runSelectionGuardedBatchPlay(commands, actionName, selectionCommands) {
+      const photoshop = getPhotoshopApi();
+      if (!photoshop || !photoshop.core || !photoshop.app) {
+        console.error('[LassoPaint] Photoshop API is unavailable.');
+        return { success: false, message: 'Photoshop API is unavailable.' };
+      }
+
+      const batchPlay = photoshop.app.batchPlay;
+      if (typeof batchPlay !== 'function') {
+        console.error('[LassoPaint] batchPlay is unavailable.');
+        return { success: false, message: 'Photoshop batchPlay API is unavailable.' };
+      }
+
+      if (!Array.isArray(commands) || !commands.length) {
+        console.error(`[LassoPaint] No BatchPlay commands were built for ${actionName}.`);
+        return { success: false, message: `No BatchPlay commands were built for ${actionName}.` };
+      }
+
+      if (!Array.isArray(selectionCommands) || !selectionCommands.length) {
+        return { success: false, message: 'No active selection. Fill skipped.' };
+      }
+
+      try {
+        let fillCompleted = false;
+
+        console.info(`[LassoPaint] Checking active selection before ${actionName}.`);
+        await photoshop.core.executeAsModal(async () => {
+          let selectionResult = null;
+
+          try {
+            selectionResult = await batchPlay(selectionCommands, { synchronous: true });
+          } catch (error) {
+            console.warn('[LassoPaint] Selection check failed. Fill skipped.', error);
+            return;
+          }
+
+          const hasSelection = Array.isArray(selectionResult) && descriptorHasSelectionBounds(selectionResult[0]);
+          if (!hasSelection) {
+            console.warn('[LassoPaint] No active selection. Fill skipped.');
+            return;
+          }
+
+          await batchPlay(commands, { synchronous: true });
+          fillCompleted = true;
+        }, { commandName: actionName });
+
+        if (!fillCompleted) {
+          return { success: false, message: 'No active selection. Fill skipped.' };
+        }
+
+        console.info(`[LassoPaint] ${actionName} completed.`);
+        return { success: true, message: `${actionName} completed.` };
+      } catch (error) {
+        console.error(`[LassoPaint] ${actionName} failed.`, error);
+        return {
+          success: false,
+          message: error && error.message ? error.message : `${actionName} failed.`
+        };
+      }
+    },
+
     async runConfiguredFill(options = {}) {
       const batchplayModule = getBatchPlayModule();
       const commands = [];
@@ -126,7 +196,11 @@
       }
 
       const actionName = [newLayer ? 'New Layer' : null, 'Fill', deselect ? 'Deselect' : null].filter(Boolean).join(' + ') || 'Fill';
-      return this.runModalBatchPlay(commands, actionName);
+      const selectionCommands = batchplayModule && typeof batchplayModule.buildGetSelectionBoundsCommand === 'function'
+        ? batchplayModule.buildGetSelectionBoundsCommand()
+        : [];
+
+      return this.runSelectionGuardedBatchPlay(commands, actionName, selectionCommands);
     },
 
     async fillSelectionWithForegroundColor() {

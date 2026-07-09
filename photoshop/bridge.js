@@ -32,50 +32,19 @@
   }
 
   async function fillSelectionWithForegroundColor() {
-    const commands = BatchPlayModule && typeof BatchPlayModule.buildFillSelectionCommand === 'function'
-      ? BatchPlayModule.buildFillSelectionCommand()
-      : [];
-
-    return ModalModule.runModalBatchPlay(commands, 'Fill Selection');
+    return runConfiguredFill({ newLayer: false, deselect: false });
   }
 
   async function fillSelectionAndDeselect() {
-    const commands = [];
-    if (BatchPlayModule && typeof BatchPlayModule.buildFillSelectionCommand === 'function') {
-      commands.push(...BatchPlayModule.buildFillSelectionCommand());
-    }
-    if (BatchPlayModule && typeof BatchPlayModule.buildDeselectSelectionCommand === 'function') {
-      commands.push(...BatchPlayModule.buildDeselectSelectionCommand());
-    }
-
-    return ModalModule.runModalBatchPlay(commands, 'Fill + Deselect');
+    return runConfiguredFill({ newLayer: false, deselect: true });
   }
 
   async function newLayerAndFill() {
-    const commands = [];
-    if (BatchPlayModule && typeof BatchPlayModule.buildCreateNewPixelLayerCommand === 'function') {
-      commands.push(...BatchPlayModule.buildCreateNewPixelLayerCommand());
-    }
-    if (BatchPlayModule && typeof BatchPlayModule.buildFillSelectionCommand === 'function') {
-      commands.push(...BatchPlayModule.buildFillSelectionCommand());
-    }
-
-    return ModalModule.runModalBatchPlay(commands, 'New Layer + Fill');
+    return runConfiguredFill({ newLayer: true, deselect: false });
   }
 
   async function newLayerAndFillAndDeselect() {
-    const commands = [];
-    if (BatchPlayModule && typeof BatchPlayModule.buildCreateNewPixelLayerCommand === 'function') {
-      commands.push(...BatchPlayModule.buildCreateNewPixelLayerCommand());
-    }
-    if (BatchPlayModule && typeof BatchPlayModule.buildFillSelectionCommand === 'function') {
-      commands.push(...BatchPlayModule.buildFillSelectionCommand());
-    }
-    if (BatchPlayModule && typeof BatchPlayModule.buildDeselectSelectionCommand === 'function') {
-      commands.push(...BatchPlayModule.buildDeselectSelectionCommand());
-    }
-
-    return ModalModule.runModalBatchPlay(commands, 'New Layer + Fill + Deselect');
+    return runConfiguredFill({ newLayer: true, deselect: true });
   }
 
   async function startEventDiagnostics() {

@@ -2,7 +2,7 @@
   "manifestVersion": 5,
   "id": "com.lassopaint.plugin",
   "name": "Lasso Paint",
-  "version": "0.12.3",
+  "version": "0.13.0",
   "main": "index.html",
   "host": {
     "app": "PS",

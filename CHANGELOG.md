@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.13.0 - 2026-07-09
+
+- Removed the Safety section and the Allow fill without selection panel setting.
+- Added a selection guard before every fill workflow so Run Fill and Advanced Quick Commands skip when no active selection can be confirmed.
+- Prevented new-layer creation and deselect commands from running when fill is skipped.
+- Removed duplicated Advanced buttons so Quick Commands presents only four fill workflow actions.
+- Updated project metadata to version 0.13.0.
+
 ## 0.12.3 - 2026-07-09
 
 - Reworked the README into the final public landing page with centered branding, badges, workflow media, screenshots, installation, usage, safety, roadmap, UXP, contributing, and license sections.

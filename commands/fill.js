@@ -19,7 +19,15 @@
     }
 
     const actionName = [newLayer ? 'New Layer' : null, 'Fill', deselect ? 'Deselect' : null].filter(Boolean).join(' + ') || 'Fill';
-    return modalModule.runModalBatchPlay(commands, actionName);
+    const selectionCommands = batchPlayModule && typeof batchPlayModule.buildGetSelectionBoundsCommand === 'function'
+      ? batchPlayModule.buildGetSelectionBoundsCommand()
+      : [];
+
+    if (!modalModule || typeof modalModule.runSelectionGuardedBatchPlay !== 'function') {
+      return { success: false, message: 'No active selection. Fill skipped.' };
+    }
+
+    return modalModule.runSelectionGuardedBatchPlay(commands, actionName, selectionCommands);
   }
 
   const FillCommand = {
