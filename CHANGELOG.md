@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+- Removed the Advanced and Developer tabs from the panel for a cleaner daily drawing UI.
+- Removed panel bindings for the hidden manual command and diagnostics controls.
+- Updated README copy to match the simplified Auto Mode-focused panel.
+
 ## 0.16.2 - 2026-07-10
 
 - Added built-in Fill Presets for Base, Shadow, Highlight, and Overlay workflows.

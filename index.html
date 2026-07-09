@@ -140,8 +140,7 @@
       background: var(--color-surface-pressed);
     }
 
-    .panel button:focus-visible,
-    .section-title:focus-visible {
+    .panel button:focus-visible {
       outline: 2px solid var(--color-focus);
       outline-offset: 1px;
     }
@@ -277,48 +276,6 @@
       display: flex;
       flex-direction: column;
       gap: var(--space-2);
-    }
-
-    .section-title {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: var(--space-2);
-      cursor: pointer;
-      min-height: 24px;
-      padding: var(--space-1) 0;
-      user-select: none;
-    }
-
-    .section-content {
-      display: flex;
-      flex-direction: column;
-      gap: var(--space-2);
-    }
-
-    .section-content.is-collapsed {
-      display: none;
-    }
-
-    .section-note {
-      font-size: 12px;
-      line-height: 1.4;
-      padding: var(--space-1) 0 0 24px;
-    }
-
-    .section-muted {
-      color: var(--color-text-muted);
-      font-size: 12px;
-    }
-
-    .button-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: var(--space-2);
-    }
-
-    .button-row > button {
-      flex: 1 1 120px;
     }
 
     .settings-row {
@@ -560,33 +517,9 @@
       outline-offset: 1px;
     }
 
-    .log-area {
-      height: 140px;
-      overflow: auto;
-      border: 1px solid var(--color-border);
-      border-radius: var(--control-radius);
-      background: var(--color-surface-pressed);
-      color: var(--color-text);
-      padding: var(--space-2);
-      font-family: var(--font-mono);
-      font-size: 12px;
-      white-space: pre-wrap;
-      word-break: break-word;
-    }
-
-    .experimental-toggle {
-      font-size: 12px;
-      color: var(--color-text-muted);
-      padding: var(--space-1) 0;
-    }
-
     @media (max-width: 300px) {
       .panel {
         padding: var(--space-3);
-      }
-
-      .button-row > button {
-        flex-basis: 100%;
       }
     }
 
@@ -656,47 +589,6 @@
           <label class="workflow-option" for="newLayerCheckbox" title="New Layer before fill"><span>New Layer</span><input id="newLayerCheckbox" type="checkbox"><span class="workflow-mark" aria-hidden="true">✓</span></label>
           <label class="workflow-option" for="deselectCheckbox" title="Deselect after action"><span>Deselect</span><input id="deselectCheckbox" type="checkbox"><span class="workflow-mark" aria-hidden="true">✓</span></label>
         </div>
-      </div>
-    </div>
-
-    <div class="section">
-      <div class="section-title" id="advancedToggle" role="button" tabindex="0" aria-expanded="false" aria-controls="advancedContent">
-        <h2>Advanced</h2>
-        <span class="section-muted">▸</span>
-      </div>
-      <div class="section-content is-collapsed" id="advancedContent">
-        <div class="button-row">
-          <button id="runFillButton" type="button">Run Fill</button>
-          <button id="eraseSelectionButton" type="button">Erase Selection</button>
-        </div>
-        <div class="button-row">
-          <button id="quickFillButton" class="compact" type="button" data-command="fill">Fill</button>
-          <button id="quickFillDeselectButton" class="compact" type="button" data-command="fillDeselect">Fill+Deselect</button>
-          <button id="quickNewLayerFillButton" class="compact" type="button" data-command="newLayerFill">NewLayer+Fill</button>
-          <button id="quickNewLayerFillDeselectButton" class="compact" type="button" data-command="newLayerFillDeselect">NewLayer+Fill+Deselect</button>
-        </div>
-      </div>
-    </div>
-
-    <div class="section">
-      <div class="section-title" id="developerToggle" role="button" tabindex="0" aria-expanded="false" aria-controls="developerContent">
-        <h2>Developer</h2>
-        <span class="section-muted">▸</span>
-      </div>
-      <div class="section-content is-collapsed" id="developerContent">
-        <div class="experimental-toggle">Event diagnostics and selection watcher are kept disabled for safety.</div>
-        <div class="button-row">
-          <button id="startEventLogButton" type="button">Start Event Log</button>
-          <button id="stopEventLogButton" type="button">Stop Event Log</button>
-          <button id="clearEventLogButton" type="button">Clear Log</button>
-        </div>
-        <div id="eventLog" class="log-area" aria-live="polite"></div>
-        <div class="button-row">
-          <button id="startWatchButton" type="button" disabled>Start Watch</button>
-          <button id="stopWatchButton" type="button" disabled>Stop Watch</button>
-          <button id="clearWatchLogButton" type="button" disabled>Clear Watch Log</button>
-        </div>
-        <div id="watchLog" class="log-area" aria-live="polite"></div>
       </div>
     </div>
 
