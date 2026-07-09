@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.16.1 - 2026-07-10
+
+- Added a Fill blend mode control with Normal, Multiply, Screen, and Overlay options.
+- Persisted the selected fill blend mode in local storage.
+- Applied the selected blend mode to Auto Fill, Run Fill, and Advanced Quick Fill commands.
+- Updated project metadata to version 0.16.1.
+
 ## 0.16.0 - 2026-07-09
 
 - Added Fill opacity controls with 20%, 40%, 60%, 80%, and 100% options.

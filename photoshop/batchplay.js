@@ -6,8 +6,13 @@
     return [20, 40, 60, 80, 100].indexOf(numeric) !== -1 ? numeric : 100;
   }
 
-  function buildFillSelectionCommand(opacity) {
+  function normalizeBlendMode(value) {
+    return ['multiply', 'screen', 'overlay'].indexOf(value) !== -1 ? value : 'normal';
+  }
+
+  function buildFillSelectionCommand(opacity, blendMode) {
     const fillOpacity = normalizeOpacity(opacity);
+    const fillBlendMode = normalizeBlendMode(blendMode);
     return [{
       _obj: 'fill',
       using: {
@@ -20,7 +25,7 @@
       },
       mode: {
         _enum: 'blendMode',
-        _value: 'normal'
+        _value: fillBlendMode
       },
       preserveTransparency: false,
       _isCommand: true

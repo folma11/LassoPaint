@@ -79,6 +79,7 @@
       const newLayerCheckbox = document.getElementById('newLayerCheckbox');
       const deselectCheckbox = document.getElementById('deselectCheckbox');
       const opacityButtons = Array.prototype.slice.call(document.querySelectorAll('.opacity-option'));
+      const blendModeButtons = Array.prototype.slice.call(document.querySelectorAll('.blend-option'));
       const quickCommandButtons = [
         document.getElementById('quickFillButton'),
         document.getElementById('quickFillDeselectButton'),
@@ -121,11 +122,28 @@
         });
       }
 
+      function normalizeBlendMode(value) {
+        return ['multiply', 'screen', 'overlay'].indexOf(value) !== -1 ? value : 'normal';
+      }
+
+      function getCurrentBlendMode() {
+        const selected = blendModeButtons.find((button) => button.getAttribute('aria-pressed') === 'true');
+        return normalizeBlendMode(selected ? selected.getAttribute('data-blend-mode') : 'normal');
+      }
+
+      function setBlendModeButtonState(blendMode) {
+        const normalizedBlendMode = normalizeBlendMode(blendMode);
+        blendModeButtons.forEach((button) => {
+          button.setAttribute('aria-pressed', normalizeBlendMode(button.getAttribute('data-blend-mode')) === normalizedBlendMode ? 'true' : 'false');
+        });
+      }
+
       function getCurrentFillOptions() {
         return {
           newLayer: newLayerCheckbox ? Boolean(newLayerCheckbox.checked) : false,
           deselect: deselectCheckbox ? Boolean(deselectCheckbox.checked) : false,
-          opacity: getCurrentOpacity()
+          opacity: getCurrentOpacity(),
+          blendMode: getCurrentBlendMode()
         };
       }
 
@@ -225,6 +243,27 @@
             writeStorageString('lassopaint.fillOpacity', String(opacity));
             syncAutoFillOptions();
             console.info('[LassoPaint] Fill opacity saved.', opacity);
+          };
+
+          button.addEventListener('click', activate);
+          button.addEventListener('keydown', (event) => {
+            if (event.key === 'Enter' || event.key === ' ') {
+              event.preventDefault();
+              activate();
+            }
+          });
+        });
+      }
+
+      if (blendModeButtons.length) {
+        setBlendModeButtonState(readStorageString('lassopaint.fillBlendMode', 'normal'));
+        blendModeButtons.forEach((button) => {
+          const activate = () => {
+            const blendMode = normalizeBlendMode(button.getAttribute('data-blend-mode'));
+            setBlendModeButtonState(blendMode);
+            writeStorageString('lassopaint.fillBlendMode', blendMode);
+            syncAutoFillOptions();
+            console.info('[LassoPaint] Fill blend mode saved.', blendMode);
           };
 
           button.addEventListener('click', activate);

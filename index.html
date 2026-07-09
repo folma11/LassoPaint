@@ -334,15 +334,24 @@
       margin-bottom: var(--space-1);
     }
 
-    .opacity-control {
+    .opacity-control,
+    .blend-control {
       width: 100%;
       display: flex;
       flex-direction: column;
       gap: var(--space-1);
+    }
+
+    .opacity-control {
       margin: var(--space-1) 0 var(--space-3);
     }
 
-    .opacity-options {
+    .blend-control {
+      margin: calc(-1 * var(--space-2)) 0 var(--space-3);
+    }
+
+    .opacity-options,
+    .blend-options {
       width: 100%;
       display: flex;
       align-items: stretch;
@@ -351,7 +360,8 @@
       padding: 0;
     }
 
-    .opacity-option {
+    .opacity-option,
+    .blend-option {
       box-sizing: border-box;
       flex: 1 1 0;
       width: auto;
@@ -377,36 +387,43 @@
       line-height: 1;
     }
 
-    .opacity-option + .opacity-option {
+    .opacity-option + .opacity-option,
+    .blend-option + .blend-option {
       margin-left: -1px;
     }
 
-    .opacity-option:first-child {
+    .opacity-option:first-child,
+    .blend-option:first-child {
       border-top-right-radius: 0;
       border-bottom-right-radius: 0;
     }
 
-    .opacity-option:not(:first-child):not(:last-child) {
+    .opacity-option:not(:first-child):not(:last-child),
+    .blend-option:not(:first-child):not(:last-child) {
       border-radius: 0;
     }
 
-    .opacity-option:last-child {
+    .opacity-option:last-child,
+    .blend-option:last-child {
       border-top-left-radius: 0;
       border-bottom-left-radius: 0;
     }
 
-    .opacity-option:hover {
+    .opacity-option:hover,
+    .blend-option:hover {
       background: var(--color-surface-hover);
       color: var(--color-text);
       -webkit-text-fill-color: var(--color-text);
     }
 
-    .opacity-option:focus-visible {
+    .opacity-option:focus-visible,
+    .blend-option:focus-visible {
       outline: 2px solid var(--color-focus);
       outline-offset: 1px;
     }
 
-    .opacity-option[aria-pressed="true"] {
+    .opacity-option[aria-pressed="true"],
+    .blend-option[aria-pressed="true"] {
       background: var(--color-accent);
       border-color: var(--color-accent);
       color: var(--color-text-heading);
@@ -521,6 +538,15 @@
         <button class="opacity-option" type="button" data-opacity="60" aria-label="Fill opacity 60%" aria-pressed="false">60</button>
         <button class="opacity-option" type="button" data-opacity="80" aria-label="Fill opacity 80%" aria-pressed="false">80</button>
         <button class="opacity-option" type="button" data-opacity="100" aria-label="Fill opacity 100%" aria-pressed="true">100</button>
+      </div>
+    </div>
+
+    <div class="blend-control" aria-label="Fill blend mode">
+      <div class="blend-options" role="group" aria-label="Fill blend mode">
+        <button class="blend-option" type="button" data-blend-mode="normal" aria-label="Blend mode normal" aria-pressed="true">Normal</button>
+        <button class="blend-option" type="button" data-blend-mode="multiply" aria-label="Blend mode multiply" aria-pressed="false">Multiply</button>
+        <button class="blend-option" type="button" data-blend-mode="screen" aria-label="Blend mode screen" aria-pressed="false">Screen</button>
+        <button class="blend-option" type="button" data-blend-mode="overlay" aria-label="Blend mode overlay" aria-pressed="false">Overlay</button>
       </div>
     </div>
 

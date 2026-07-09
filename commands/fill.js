@@ -6,13 +6,14 @@
     const newLayer = Boolean(options && options.newLayer);
     const deselect = Boolean(options && options.deselect);
     const opacity = options && options.opacity ? options.opacity : 100;
+    const blendMode = options && options.blendMode ? options.blendMode : 'normal';
 
     if (newLayer && batchPlayModule && typeof batchPlayModule.buildCreateNewPixelLayerCommand === 'function') {
       commands.push(...batchPlayModule.buildCreateNewPixelLayerCommand());
     }
 
     if (batchPlayModule && typeof batchPlayModule.buildFillSelectionCommand === 'function') {
-      commands.push(...batchPlayModule.buildFillSelectionCommand(opacity));
+      commands.push(...batchPlayModule.buildFillSelectionCommand(opacity, blendMode));
     }
 
     if (deselect && batchPlayModule && typeof batchPlayModule.buildDeselectSelectionCommand === 'function') {
