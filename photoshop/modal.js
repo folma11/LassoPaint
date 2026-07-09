@@ -59,7 +59,22 @@
     return ['top', 'left', 'bottom', 'right'].every((key) => selection[key] !== undefined);
   }
 
-  async function runSelectionGuardedBatchPlay(commands, actionName, selectionCommands) {
+  function getSelectionBoundsKey(descriptor) {
+    const selection = descriptor && (descriptor.selection || descriptor);
+    if (!selection || typeof selection !== 'object') {
+      return '';
+    }
+
+    return ['top', 'left', 'bottom', 'right'].map((key) => {
+      const value = selection[key];
+      if (value && typeof value === 'object' && '_value' in value) {
+        return `${key}:${value._value}`;
+      }
+      return `${key}:${String(value)}`;
+    }).join('|');
+  }
+
+  async function runSelectionGuardedBatchPlay(commands, actionName, selectionCommands, options) {
     const photoshop = getPhotoshopApi();
     if (!photoshop || !photoshop.core || !photoshop.app) {
       return { success: false, message: 'Photoshop API is unavailable.' };
@@ -80,6 +95,7 @@
 
     try {
       let fillCompleted = false;
+      let selectionKey = '';
 
       console.info(`[LassoPaint] Checking active selection before ${actionName}.`);
       await photoshop.core.executeAsModal(async () => {
@@ -98,15 +114,25 @@
           return;
         }
 
+        selectionKey = getSelectionBoundsKey(selectionResult[0]);
+        if (options && options.skipSelectionKey && selectionKey === options.skipSelectionKey) {
+          console.info('[LassoPaint] Selection already handled. Fill skipped.');
+          return;
+        }
+
         await batchPlay(commands, { synchronous: true });
         fillCompleted = true;
       }, { commandName: actionName });
 
       if (!fillCompleted) {
+        if (selectionKey && options && options.skipSelectionKey && selectionKey === options.skipSelectionKey) {
+          return { success: false, message: 'Selection already handled. Fill skipped.', selectionKey };
+        }
+
         return { success: false, message: 'No active selection. Fill skipped.' };
       }
 
-      return { success: true, message: `${actionName} completed.` };
+      return { success: true, message: `${actionName} completed.`, selectionKey };
     } catch (error) {
       console.error(`[LassoPaint] ${actionName} failed.`, error);
       return {

@@ -60,6 +60,7 @@
       bindCollapsibleSection('developerToggle', 'developerContent');
 
       const runFillButton = document.getElementById('runFillButton');
+      const autoFillCheckbox = document.getElementById('autoFillCheckbox');
       const newLayerCheckbox = document.getElementById('newLayerCheckbox');
       const deselectCheckbox = document.getElementById('deselectCheckbox');
       const quickCommandButtons = [
@@ -73,6 +74,7 @@
         newLayerCheckbox.checked = readStorageBoolean('lassopaint.newLayerBeforeFill', false);
         newLayerCheckbox.addEventListener('change', (event) => {
           writeStorageBoolean('lassopaint.newLayerBeforeFill', Boolean(event.target.checked));
+          syncAutoFillOptions();
           console.info('[LassoPaint] New Layer setting saved.', event.target.checked);
         });
       }
@@ -81,6 +83,7 @@
         deselectCheckbox.checked = readStorageBoolean('lassopaint.deselectAfterFill', false);
         deselectCheckbox.addEventListener('change', (event) => {
           writeStorageBoolean('lassopaint.deselectAfterFill', Boolean(event.target.checked));
+          syncAutoFillOptions();
           console.info('[LassoPaint] Deselect setting saved.', event.target.checked);
         });
       }
@@ -90,6 +93,42 @@
           newLayer: newLayerCheckbox ? Boolean(newLayerCheckbox.checked) : false,
           deselect: deselectCheckbox ? Boolean(deselectCheckbox.checked) : false
         };
+      }
+
+      function syncAutoFillOptions() {
+        if (appContext && appContext.photoshop && typeof appContext.photoshop.setAutoFillOptions === 'function') {
+          appContext.photoshop.setAutoFillOptions(getCurrentFillOptions());
+        }
+      }
+
+      async function setAutoFillEnabled(enabled) {
+        if (!appContext || !appContext.photoshop || typeof appContext.photoshop.setAutoFillEnabled !== 'function') {
+          PanelUI.setStatus('Auto Fill is not available.', true);
+          if (autoFillCheckbox) {
+            autoFillCheckbox.checked = false;
+          }
+          return;
+        }
+
+        const result = await appContext.photoshop.setAutoFillEnabled(enabled, getCurrentFillOptions());
+        if (result && result.success) {
+          PanelUI.setStatus(result.message || (enabled ? 'Auto Fill enabled.' : 'Auto Fill disabled.'), false);
+        } else {
+          PanelUI.setStatus(result && result.message ? result.message : 'Auto Fill failed.', true);
+          if (autoFillCheckbox) {
+            autoFillCheckbox.checked = false;
+          }
+          writeStorageBoolean('lassopaint.autoFill', false);
+        }
+      }
+
+      if (autoFillCheckbox) {
+        autoFillCheckbox.checked = readStorageBoolean('lassopaint.autoFill', false);
+        autoFillCheckbox.addEventListener('change', async (event) => {
+          const enabled = Boolean(event.target.checked);
+          writeStorageBoolean('lassopaint.autoFill', enabled);
+          await setAutoFillEnabled(enabled);
+        });
       }
 
       async function runCommandAction(commandName, buttonElement, fallbackLabel) {
@@ -185,6 +224,11 @@
           }
           PanelUI.setStatus('Event log cleared.', false);
         });
+      }
+
+      syncAutoFillOptions();
+      if (autoFillCheckbox && autoFillCheckbox.checked) {
+        setAutoFillEnabled(true);
       }
 
       PanelUI.setStatus('Ready to run a fill workflow.', false);

@@ -14,7 +14,7 @@ A lightweight Adobe Photoshop UXP plugin that streamlines the selection fill wor
 
 <p align="center">
 
-<img src="https://img.shields.io/badge/version-v0.13.0-blue" alt="Version">
+<img src="https://img.shields.io/badge/version-v0.14.1-blue" alt="Version">
 <img src="https://img.shields.io/badge/license-MIT-green" alt="MIT License">
 <img src="https://img.shields.io/badge/Adobe-Photoshop-31A8FF?logo=adobephotoshop&logoColor=white" alt="Adobe Photoshop">
 <img src="https://img.shields.io/badge/UXP-Plugin-orange?logo=adobe&logoColor=white" alt="UXP Plugin">
@@ -43,6 +43,10 @@ Just a faster fill workflow.
 ### One-click Fill
 
 Fill the current selection with one focused command.
+
+### Auto Fill Mode
+
+Fill automatically after a selection is created while Auto Fill is enabled.
 
 ### New Layer before Fill
 
@@ -99,6 +103,7 @@ The advanced panel provides quick commands for repeated fill actions.
 
 Optional settings:
 
+- **Auto Fill** fills after a new selection is created.
 - **New Layer before Fill** creates a new layer before filling.
 - **Deselect after Fill** clears the selection after filling.
 
@@ -110,6 +115,7 @@ When no active selection is found, Lasso Paint skips the workflow and leaves the
 ### Current
 
 - Stable fill workflow
+- Auto Fill Mode
 - Native Photoshop UI
 - Advanced Quick Commands
 - Selection Guard
@@ -117,7 +123,6 @@ When no active selection is found, Lasso Paint skips the workflow and leaves the
 
 ### Coming Next
 
-- Auto Fill research
 - Workflow presets
 - Performance improvements
 - Additional productivity tools

@@ -1,5 +1,19 @@
 # Changelog
 
+## 0.14.1 - 2026-07-09
+
+- Improved Auto Fill responsiveness for rapid lasso workflows by removing the time-based cooldown.
+- Queued the latest selection event while Auto Fill is already running so fast repeated selections are not dropped.
+- Kept duplicate prevention by skipping selections that match the last handled selection bounds.
+- Updated project metadata to version 0.14.1.
+
+## 0.14.0 - 2026-07-09
+
+- Added Auto Fill Mode with a Workflow toggle that fills with the foreground color after a selection event.
+- Kept Run Fill as a manual fallback and reused the existing active-selection guard before filling.
+- Added a cooldown and in-progress guard to prevent duplicate Auto Fill runs from repeated notification events.
+- Updated project metadata to version 0.14.0.
+
 ## 0.13.0 - 2026-07-09
 
 - Removed the Safety section and the Allow fill without selection panel setting.

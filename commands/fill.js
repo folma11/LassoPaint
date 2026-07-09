@@ -27,7 +27,9 @@
       return { success: false, message: 'No active selection. Fill skipped.' };
     }
 
-    return modalModule.runSelectionGuardedBatchPlay(commands, actionName, selectionCommands);
+    return modalModule.runSelectionGuardedBatchPlay(commands, actionName, selectionCommands, {
+      skipSelectionKey: options && options.skipSelectionKey ? options.skipSelectionKey : ''
+    });
   }
 
   const FillCommand = {
