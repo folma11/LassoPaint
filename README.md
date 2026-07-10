@@ -72,10 +72,6 @@ Switch quickly between Base, Shadow, Highlight, and Overlay fill settings.
 
 Choose Normal, Multiply, Screen, or Overlay when filling selections.
 
-### Advanced Quick Commands
-
-Run common fill, layer, and deselect combinations from compact shortcuts.
-
 ### Native Photoshop Experience
 
 Work from a lightweight UXP panel that fits naturally into Photoshop.
@@ -89,14 +85,6 @@ Work from a lightweight UXP panel that fits naturally into Photoshop.
 </p>
 
 The main panel keeps the everyday fill workflow close at hand.
-
-### Advanced Panel
-
-<p align="center">
-  <img src="assets/screenshots/advanced-panel.png" width="520" alt="Lasso Paint advanced panel">
-</p>
-
-The advanced panel provides quick commands for repeated fill actions.
 
 ## Installation
 
@@ -124,8 +112,6 @@ Optional settings:
 - **New Layer before Fill** creates a new layer before filling in Fill mode.
 - **Deselect after Action** clears the selection after filling or erasing.
 
-Manual **Run Fill** and **Erase Selection** remain available in the Advanced section.
-
 When no active selection is found, Lasso Paint skips the workflow and leaves the layer unchanged.
 
 
@@ -136,7 +122,6 @@ When no active selection is found, Lasso Paint skips the workflow and leaves the
 - Stable fill workflow
 - Auto Mode
 - Native Photoshop UI
-- Advanced Quick Commands
 - Selection Guard
 - Modern dark UI
 

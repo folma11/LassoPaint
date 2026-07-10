@@ -27,67 +27,19 @@
     }
   }
 
-  function bindCollapsibleSection(toggleId, contentId) {
-    const toggle = document.getElementById(toggleId);
-    const content = document.getElementById(contentId);
-
-    if (!toggle || !content) {
-      console.warn(`[LassoPaint] Accordion elements not found: ${toggleId}, ${contentId}.`);
-      return;
-    }
-
-    function setExpanded(expanded) {
-      if (expanded) {
-        content.classList.remove('is-collapsed');
-      } else {
-        content.classList.add('is-collapsed');
-      }
-
-      toggle.setAttribute('aria-expanded', expanded ? 'true' : 'false');
-      const marker = toggle.querySelector('.section-muted');
-      if (marker) {
-        marker.textContent = expanded ? '▾' : '▸';
-      }
-    }
-
-    function toggleSection() {
-      setExpanded(content.classList.contains('is-collapsed'));
-    }
-
-    setExpanded(false);
-    toggle.addEventListener('click', toggleSection);
-    toggle.addEventListener('keydown', (event) => {
-      if (event.key === 'Enter' || event.key === ' ') {
-        event.preventDefault();
-        toggleSection();
-      }
-    });
-  }
-
   const PanelUI = {
     attach(context) {
       appContext = context || null;
 
-      bindCollapsibleSection('advancedToggle', 'advancedContent');
-      bindCollapsibleSection('developerToggle', 'developerContent');
-
-      const runFillButton = document.getElementById('runFillButton');
       const autoFillModeButton = document.getElementById('autoFillModeButton');
       const autoEraseModeButton = document.getElementById('autoEraseModeButton');
       const autoOffModeButton = document.getElementById('autoOffModeButton');
-      const eraseSelectionButton = document.getElementById('eraseSelectionButton');
       const newLayerCheckbox = document.getElementById('newLayerCheckbox');
       const deselectCheckbox = document.getElementById('deselectCheckbox');
       const presetButtons = Array.prototype.slice.call(document.querySelectorAll('.preset-option'));
       const opacityButtons = Array.prototype.slice.call(document.querySelectorAll('.opacity-option'));
       const blendModeButtons = Array.prototype.slice.call(document.querySelectorAll('.blend-option'));
       const fillSettingGroups = Array.prototype.slice.call(document.querySelectorAll('.fill-setting'));
-      const quickCommandButtons = [
-        document.getElementById('quickFillButton'),
-        document.getElementById('quickFillDeselectButton'),
-        document.getElementById('quickNewLayerFillButton'),
-        document.getElementById('quickNewLayerFillDeselectButton')
-      ].filter(Boolean);
 
       if (newLayerCheckbox) {
         newLayerCheckbox.checked = readStorageBoolean('lassopaint.newLayerBeforeFill', false);
@@ -355,108 +307,6 @@
               activate();
             }
           });
-        });
-      }
-
-      async function runCommandAction(commandName, buttonElement, fallbackLabel) {
-        if (!appContext || !appContext.photoshop || typeof appContext.photoshop.runCommand !== 'function') {
-          PanelUI.setStatus('Photoshop bridge is not ready.', true);
-          console.error('[LassoPaint] Photoshop bridge is unavailable.');
-          return;
-        }
-
-        const options = getCurrentFillOptions();
-        const label = fallbackLabel || buttonElement && buttonElement.textContent ? buttonElement.textContent : commandName;
-        PanelUI.setStatus(`${label} running...`, false);
-        if (buttonElement) {
-          buttonElement.disabled = true;
-        }
-
-        try {
-          const result = await appContext.photoshop.runCommand(commandName, options);
-          if (result && result.success) {
-            PanelUI.setStatus(result.message || `${label} completed.`, false);
-            console.info(`[LassoPaint] ${label} completed.`);
-          } else {
-            const message = result && result.message ? result.message : `${label} failed.`;
-            PanelUI.setStatus(message, true);
-            console.error(`[LassoPaint] ${label} failed.`, result);
-          }
-        } catch (error) {
-          PanelUI.setStatus(`${label} failed.`, true);
-          console.error(`[LassoPaint] ${label} failed.`, error);
-        } finally {
-          if (buttonElement) {
-            buttonElement.disabled = false;
-          }
-        }
-      }
-
-      if (runFillButton) {
-        runFillButton.addEventListener('click', async () => {
-          console.info('[LassoPaint] Run Fill button clicked.');
-          await runCommandAction('runFill', runFillButton, 'Run Fill');
-        });
-      }
-
-      quickCommandButtons.forEach((button) => {
-        button.addEventListener('click', async () => {
-          const commandName = button.getAttribute('data-command');
-          console.info(`[LassoPaint] Quick command clicked: ${commandName}`);
-          await runCommandAction(commandName, button, button.textContent || commandName);
-        });
-      });
-
-      const startEventButton = document.getElementById('startEventLogButton');
-      const stopEventButton = document.getElementById('stopEventLogButton');
-      const clearEventButton = document.getElementById('clearEventLogButton');
-      const eventLog = document.getElementById('eventLog');
-
-      if (startEventButton) {
-        startEventButton.addEventListener('click', async () => {
-          if (!appContext || !appContext.photoshop || typeof appContext.photoshop.startEventDiagnostics !== 'function') {
-            PanelUI.setStatus('Photoshop diagnostics bridge is not ready.', true);
-            return;
-          }
-
-          const result = await appContext.photoshop.startEventDiagnostics();
-          if (result && result.success) {
-            PanelUI.setStatus('Event logging started.', false);
-          } else {
-            PanelUI.setStatus(result && result.message ? result.message : 'Failed to start event logging.', true);
-          }
-        });
-      }
-
-      if (stopEventButton) {
-        stopEventButton.addEventListener('click', async () => {
-          if (!appContext || !appContext.photoshop || typeof appContext.photoshop.stopEventDiagnostics !== 'function') {
-            PanelUI.setStatus('Photoshop diagnostics bridge is not ready.', true);
-            return;
-          }
-
-          const result = await appContext.photoshop.stopEventDiagnostics();
-          if (result && result.success) {
-            PanelUI.setStatus('Event logging stopped.', false);
-          } else {
-            PanelUI.setStatus(result && result.message ? result.message : 'Failed to stop event logging.', true);
-          }
-        });
-      }
-
-      if (clearEventButton) {
-        clearEventButton.addEventListener('click', () => {
-          if (eventLog) {
-            eventLog.textContent = '';
-          }
-          PanelUI.setStatus('Event log cleared.', false);
-        });
-      }
-
-      if (eraseSelectionButton) {
-        eraseSelectionButton.addEventListener('click', async () => {
-          console.info('[LassoPaint] Erase Selection button clicked.');
-          await runCommandAction('erase', eraseSelectionButton, 'Erase Selection');
         });
       }
 
