@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Added README installation guidance for packaged `.ccx` releases.
+
 ## 0.16.3 - 2026-07-10
 
 - Added dedicated root-level 48px and 96px plugin list icons for packaged Creative Cloud installation display.

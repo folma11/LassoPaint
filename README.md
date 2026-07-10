@@ -96,6 +96,16 @@ The main panel keeps Auto Mode, presets, fill controls, and workflow toggles clo
 
 ## Installation
 
+### Recommended
+
+1. Download the latest `.ccx` package from GitHub Releases.
+2. Open the `.ccx` file.
+3. Install Lasso Paint through Creative Cloud Desktop.
+4. Open Photoshop.
+5. Open **Plugins > Lasso Paint**.
+
+### Developer Install
+
 1. Install Adobe UXP Developer Tool.
 2. Clone or download the repository.
 3. Open UXP Developer Tool.
