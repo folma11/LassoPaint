@@ -59,7 +59,7 @@
       padding: var(--space-4);
       display: flex;
       flex-direction: column;
-      gap: var(--space-3);
+      gap: 14px;
     }
 
     .panel h1 {
@@ -106,9 +106,9 @@
       margin: 0;
       color: var(--color-text);
       font-size: 12px;
-      font-weight: 600;
+      font-weight: 500;
       text-transform: uppercase;
-      letter-spacing: 0.06em;
+      letter-spacing: 0.045em;
     }
 
     .panel p {
@@ -324,7 +324,7 @@
     .settings-row {
       display: flex;
       flex-direction: column;
-      gap: var(--space-2);
+      gap: 6px;
       padding: 0;
       background: transparent;
       margin-top: var(--space-1);
@@ -344,11 +344,12 @@
     }
 
     .preset-control {
-      margin: var(--space-1) 0 var(--space-3);
-      padding: var(--space-2);
+      margin: var(--space-1) 0 10px;
+      padding: 10px;
       border-radius: var(--control-radius);
       background: var(--color-surface);
       border: 1px solid var(--color-separator);
+      gap: 6px;
     }
 
     .preset-title {
@@ -362,11 +363,11 @@
     }
 
     .opacity-control {
-      margin: 0 0 var(--space-3);
+      margin: 0 0 6px;
     }
 
     .blend-control {
-      margin: calc(-1 * var(--space-2)) 0 var(--space-3);
+      margin: 0 0 14px;
     }
 
     .preset-options,
@@ -487,11 +488,22 @@
       -webkit-text-fill-color: var(--color-text);
     }
 
+    .workflow-list {
+      width: 220px;
+      max-width: 100%;
+      min-width: 168px;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
     .workflow-option {
+      position: relative;
       display: flex;
       align-items: center;
-      gap: var(--space-2);
-      min-height: 20px;
+      justify-content: space-between;
+      gap: var(--space-3);
+      min-height: 28px;
       padding: 2px 0;
       color: var(--color-text) !important;
       -webkit-text-fill-color: var(--color-text);
@@ -511,19 +523,39 @@
     }
 
     .workflow-option input[type="checkbox"] {
-      appearance: auto;
-      -webkit-appearance: checkbox;
-      flex: 0 0 16px;
-      width: 16px;
-      height: 16px;
+      position: absolute;
+      width: 1px;
+      height: 1px;
       margin: 0;
-      opacity: 1;
-      accent-color: var(--color-accent);
-      color-scheme: dark;
-      cursor: pointer;
+      opacity: 0;
+      pointer-events: none;
     }
 
-    .workflow-option input[type="checkbox"]:focus-visible {
+    .workflow-option .workflow-mark {
+      flex: 0 0 14px;
+      width: 14px;
+      height: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid var(--color-separator);
+      border-radius: 2px;
+      background: var(--color-bg);
+      color: transparent !important;
+      -webkit-text-fill-color: transparent;
+      font-size: 11px;
+      font-weight: 700;
+      line-height: 1;
+    }
+
+    .workflow-option input[type="checkbox"]:checked + .workflow-mark {
+      background: var(--color-accent);
+      border-color: var(--color-accent);
+      color: var(--color-text-heading) !important;
+      -webkit-text-fill-color: var(--color-text-heading);
+    }
+
+    .workflow-option input[type="checkbox"]:focus-visible + .workflow-mark {
       outline: 2px solid var(--color-focus);
       outline-offset: 1px;
     }
@@ -620,8 +652,10 @@
     <div class="section">
       <div class="settings-row">
         <h2>Workflow</h2>
-        <label class="workflow-option" for="newLayerCheckbox"><input id="newLayerCheckbox" type="checkbox"><span>New Layer before fill</span></label>
-        <label class="workflow-option" for="deselectCheckbox"><input id="deselectCheckbox" type="checkbox"><span>Deselect after action</span></label>
+        <div class="workflow-list">
+          <label class="workflow-option" for="newLayerCheckbox" title="New Layer before fill"><span>New Layer</span><input id="newLayerCheckbox" type="checkbox"><span class="workflow-mark" aria-hidden="true">✓</span></label>
+          <label class="workflow-option" for="deselectCheckbox" title="Deselect after action"><span>Deselect</span><input id="deselectCheckbox" type="checkbox"><span class="workflow-mark" aria-hidden="true">✓</span></label>
+        </div>
       </div>
     </div>
 
