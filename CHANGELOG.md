@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+## 0.16.3 - 2026-07-10
+
+- Added dedicated root-level 48px and 96px plugin list icons for packaged Creative Cloud installation display.
 - Updated README wording to match the current Auto Mode, preset, collapsible fill controls, and simplified panel UI.
 - Grouped Lasso Paint fill, erase, new layer, and deselect steps into a single plugin history state when Photoshop supports history suspension.
 - Added README guidance for Photoshop's spring-loaded Eyedropper workflow while using Lasso Paint.
@@ -10,6 +13,7 @@
 - Removed the Advanced and Developer tabs from the panel for a cleaner daily drawing UI.
 - Removed panel bindings for the hidden manual command and diagnostics controls.
 - Updated README copy to match the simplified Auto Mode-focused panel.
+- Updated project metadata to version 0.16.3.
 
 ## 0.16.2 - 2026-07-10
 

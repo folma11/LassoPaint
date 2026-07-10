@@ -1,6 +1,6 @@
 {
   "name": "lasso-paint",
-  "version": "0.16.2",
+  "version": "0.16.3",
   "private": true,
   "description": "A production-ready Adobe Photoshop UXP plugin scaffold for Lasso Paint.",
   "license": "MIT",
