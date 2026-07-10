@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Added a collapsible Opacity / Blend tab so detailed fill controls can stay tucked away during daily drawing.
 - Removed the Advanced and Developer tabs from the panel for a cleaner daily drawing UI.
 - Removed panel bindings for the hidden manual command and diagnostics controls.
 - Updated README copy to match the simplified Auto Mode-focused panel.

@@ -56,34 +56,37 @@
       width: 100%;
       max-width: 450px;
       margin: 0 auto;
-      padding: var(--space-4);
+      padding: var(--space-3) var(--space-4) var(--space-4);
       display: flex;
       flex-direction: column;
-      gap: 14px;
+      gap: var(--space-3);
     }
 
     .panel h1 {
       margin: 0;
       color: var(--color-text-heading);
-      font-size: 17px;
-      font-weight: 600;
+      font-size: 12px;
+      font-weight: 500;
       line-height: 1.3;
     }
 
     .brand {
       display: flex;
-      flex-direction: column;
+      flex-direction: row;
       align-items: center;
-      padding: 0;
-      text-align: center;
+      justify-content: center;
+      gap: 5px;
+      min-height: 20px;
+      padding: 0 0 var(--space-1);
+      text-align: left;
     }
 
     .brand-logo {
-      width: 36px;
-      max-width: 160px;
+      width: 18px;
+      max-width: 18px;
       height: auto;
       display: block;
-      margin: 0 auto 4px;
+      margin: 0;
     }
 
     .brand-copy {
@@ -91,7 +94,8 @@
     }
 
     .brand-tagline {
-      margin-top: 2px;
+      display: none;
+      margin-top: 0;
       color: var(--color-text-muted);
       font-size: 11px;
       line-height: 1.25;
@@ -99,7 +103,7 @@
 
     .brand + .primary,
     .brand + .primary-split {
-      margin-top: var(--space-2);
+      margin-top: 0;
     }
 
     .panel h2 {
@@ -324,7 +328,73 @@
     }
 
     .blend-control {
-      margin: 0 0 14px;
+      margin: 0;
+    }
+
+    .fine-tune {
+      width: 100%;
+      margin: -2px 0 14px;
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-2);
+    }
+
+    .settings-tab {
+      min-height: 28px;
+      padding: 0 var(--space-2);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--space-2);
+      border: 1px solid var(--color-separator);
+      border-radius: var(--control-radius);
+      background: var(--color-surface-pressed);
+      color: var(--color-text);
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .settings-tab:hover {
+      background: var(--color-surface-hover);
+    }
+
+    .settings-tab:focus-visible {
+      outline: 2px solid var(--color-focus);
+      outline-offset: 1px;
+    }
+
+    .settings-tab-title {
+      flex: 0 1 auto;
+      min-width: 0;
+      font-size: 11px;
+      font-weight: 600;
+    }
+
+    .settings-tab-summary {
+      flex: 1 1 auto;
+      min-width: 0;
+      color: var(--color-text-muted);
+      font-size: 11px;
+      text-align: right;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .settings-tab-marker {
+      flex: 0 0 auto;
+      color: var(--color-text-muted);
+      font-size: 11px;
+    }
+
+    .fine-tune-content {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .fine-tune-content.is-collapsed {
+      display: none;
     }
 
     .preset-options,
@@ -519,7 +589,7 @@
 
     @media (max-width: 300px) {
       .panel {
-        padding: var(--space-3);
+        padding: var(--space-2) var(--space-3) var(--space-3);
       }
     }
 
@@ -563,22 +633,31 @@
       </div>
     </div>
 
-    <div class="opacity-control fill-setting" aria-label="Fill opacity">
-      <div class="opacity-options" role="group" aria-label="Fill opacity">
-        <button class="opacity-option" type="button" data-opacity="20" aria-label="Fill opacity 20%" aria-pressed="false">20</button>
-        <button class="opacity-option" type="button" data-opacity="40" aria-label="Fill opacity 40%" aria-pressed="false">40</button>
-        <button class="opacity-option" type="button" data-opacity="60" aria-label="Fill opacity 60%" aria-pressed="false">60</button>
-        <button class="opacity-option" type="button" data-opacity="80" aria-label="Fill opacity 80%" aria-pressed="false">80</button>
-        <button class="opacity-option" type="button" data-opacity="100" aria-label="Fill opacity 100%" aria-pressed="true">100</button>
+    <div class="fine-tune">
+      <div id="fillSettingsToggle" class="settings-tab" role="button" tabindex="0" aria-expanded="false" aria-controls="fillSettingsContent">
+        <span class="settings-tab-title">Opacity / Blend</span>
+        <span id="fillSettingsSummary" class="settings-tab-summary">100 / Normal</span>
+        <span class="settings-tab-marker">▸</span>
       </div>
-    </div>
+      <div id="fillSettingsContent" class="fine-tune-content is-collapsed">
+        <div class="opacity-control fill-setting" aria-label="Fill opacity">
+          <div class="opacity-options" role="group" aria-label="Fill opacity">
+            <button class="opacity-option" type="button" data-opacity="20" aria-label="Fill opacity 20%" aria-pressed="false">20</button>
+            <button class="opacity-option" type="button" data-opacity="40" aria-label="Fill opacity 40%" aria-pressed="false">40</button>
+            <button class="opacity-option" type="button" data-opacity="60" aria-label="Fill opacity 60%" aria-pressed="false">60</button>
+            <button class="opacity-option" type="button" data-opacity="80" aria-label="Fill opacity 80%" aria-pressed="false">80</button>
+            <button class="opacity-option" type="button" data-opacity="100" aria-label="Fill opacity 100%" aria-pressed="true">100</button>
+          </div>
+        </div>
 
-    <div class="blend-control fill-setting" aria-label="Fill blend mode">
-      <div class="blend-options" role="group" aria-label="Fill blend mode">
-        <button class="blend-option" type="button" data-blend-mode="normal" aria-label="Blend mode normal" aria-pressed="true">Normal</button>
-        <button class="blend-option" type="button" data-blend-mode="multiply" aria-label="Blend mode multiply" aria-pressed="false">Multiply</button>
-        <button class="blend-option" type="button" data-blend-mode="screen" aria-label="Blend mode screen" aria-pressed="false">Screen</button>
-        <button class="blend-option" type="button" data-blend-mode="overlay" aria-label="Blend mode overlay" aria-pressed="false">Overlay</button>
+        <div class="blend-control fill-setting" aria-label="Fill blend mode">
+          <div class="blend-options" role="group" aria-label="Fill blend mode">
+            <button class="blend-option" type="button" data-blend-mode="normal" aria-label="Blend mode normal" aria-pressed="true">Normal</button>
+            <button class="blend-option" type="button" data-blend-mode="multiply" aria-label="Blend mode multiply" aria-pressed="false">Multiply</button>
+            <button class="blend-option" type="button" data-blend-mode="screen" aria-label="Blend mode screen" aria-pressed="false">Screen</button>
+            <button class="blend-option" type="button" data-blend-mode="overlay" aria-label="Blend mode overlay" aria-pressed="false">Overlay</button>
+          </div>
+        </div>
       </div>
     </div>
 

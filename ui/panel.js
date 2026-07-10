@@ -40,6 +40,9 @@
       const opacityButtons = Array.prototype.slice.call(document.querySelectorAll('.opacity-option'));
       const blendModeButtons = Array.prototype.slice.call(document.querySelectorAll('.blend-option'));
       const fillSettingGroups = Array.prototype.slice.call(document.querySelectorAll('.fill-setting'));
+      const fillSettingsToggle = document.getElementById('fillSettingsToggle');
+      const fillSettingsContent = document.getElementById('fillSettingsContent');
+      const fillSettingsSummary = document.getElementById('fillSettingsSummary');
 
       if (newLayerCheckbox) {
         newLayerCheckbox.checked = readStorageBoolean('lassopaint.newLayerBeforeFill', false);
@@ -128,12 +131,51 @@
         setPresetButtonState(getPresetForSettings(getCurrentOpacity(), getCurrentBlendMode()));
       }
 
+      function formatBlendModeLabel(blendMode) {
+        const normalizedBlendMode = normalizeBlendMode(blendMode);
+        if (normalizedBlendMode === 'multiply') {
+          return 'Multiply';
+        }
+        if (normalizedBlendMode === 'screen') {
+          return 'Screen';
+        }
+        if (normalizedBlendMode === 'overlay') {
+          return 'Overlay';
+        }
+        return 'Normal';
+      }
+
+      function updateFillSettingsSummary() {
+        if (fillSettingsSummary) {
+          fillSettingsSummary.textContent = `${getCurrentOpacity()} / ${formatBlendModeLabel(getCurrentBlendMode())}`;
+        }
+      }
+
+      function setFillSettingsExpanded(expanded) {
+        if (!fillSettingsToggle || !fillSettingsContent) {
+          return;
+        }
+
+        fillSettingsContent.classList.toggle('is-collapsed', !expanded);
+        fillSettingsToggle.setAttribute('aria-expanded', expanded ? 'true' : 'false');
+
+        const marker = fillSettingsToggle.querySelector('.settings-tab-marker');
+        if (marker) {
+          marker.textContent = expanded ? '▾' : '▸';
+        }
+      }
+
+      function toggleFillSettings() {
+        setFillSettingsExpanded(fillSettingsContent && fillSettingsContent.classList.contains('is-collapsed'));
+      }
+
       function applyPreset(preset, options) {
         const normalizedPreset = normalizePreset(preset);
         const presetSettings = fillPresets[normalizedPreset];
         setPresetButtonState(normalizedPreset);
         setOpacityButtonState(presetSettings.opacity);
         setBlendModeButtonState(presetSettings.blendMode);
+        updateFillSettingsSummary();
 
         if (!options || !options.skipStorage) {
           writeStorageString('lassopaint.fillOpacity', String(presetSettings.opacity));
@@ -214,6 +256,17 @@
         setFillSettingControlsEnabled(normalizedMode === 'fill');
       }
 
+      if (fillSettingsToggle && fillSettingsContent) {
+        setFillSettingsExpanded(false);
+        fillSettingsToggle.addEventListener('click', toggleFillSettings);
+        fillSettingsToggle.addEventListener('keydown', (event) => {
+          if (event.key === 'Enter' || event.key === ' ') {
+            event.preventDefault();
+            toggleFillSettings();
+          }
+        });
+      }
+
       function setFillSettingControlsEnabled(enabled) {
         fillSettingGroups.forEach((group) => {
           group.classList.toggle('is-disabled', !enabled);
@@ -249,12 +302,14 @@
 
       if (opacityButtons.length) {
         setOpacityButtonState(readStorageString('lassopaint.fillOpacity', '100'));
+        updateFillSettingsSummary();
         opacityButtons.forEach((button) => {
           const activate = () => {
             const opacity = normalizeOpacity(button.getAttribute('data-opacity'));
             setOpacityButtonState(opacity);
             writeStorageString('lassopaint.fillOpacity', String(opacity));
             updatePresetButtonForCurrentSettings();
+            updateFillSettingsSummary();
             syncAutoFillOptions();
             console.info('[LassoPaint] Fill opacity saved.', opacity);
           };
@@ -271,12 +326,14 @@
 
       if (blendModeButtons.length) {
         setBlendModeButtonState(readStorageString('lassopaint.fillBlendMode', 'normal'));
+        updateFillSettingsSummary();
         blendModeButtons.forEach((button) => {
           const activate = () => {
             const blendMode = normalizeBlendMode(button.getAttribute('data-blend-mode'));
             setBlendModeButtonState(blendMode);
             writeStorageString('lassopaint.fillBlendMode', blendMode);
             updatePresetButtonForCurrentSettings();
+            updateFillSettingsSummary();
             syncAutoFillOptions();
             console.info('[LassoPaint] Fill blend mode saved.', blendMode);
           };
@@ -293,6 +350,7 @@
 
       if (presetButtons.length) {
         updatePresetButtonForCurrentSettings();
+        updateFillSettingsSummary();
         presetButtons.forEach((button) => {
           const activate = () => {
             const preset = normalizePreset(button.getAttribute('data-preset'));
