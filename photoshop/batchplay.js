@@ -10,9 +10,10 @@
     return ['multiply', 'screen', 'overlay'].indexOf(value) !== -1 ? value : 'normal';
   }
 
-  function buildFillSelectionCommand(opacity, blendMode) {
+  function buildFillSelectionCommand(opacity, blendMode, options) {
     const fillOpacity = normalizeOpacity(opacity);
     const fillBlendMode = normalizeBlendMode(blendMode);
+    const preserveTransparency = Boolean(options && options.preserveTransparency);
     return [{
       _obj: 'fill',
       using: {
@@ -27,7 +28,7 @@
         _enum: 'blendMode',
         _value: fillBlendMode
       },
-      preserveTransparency: false,
+      preserveTransparency,
       _isCommand: true
     }];
   }

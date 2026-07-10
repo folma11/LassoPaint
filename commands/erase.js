@@ -24,6 +24,7 @@
     return modalModule.runSelectionGuardedDomAction(actionName, selectionCommands, {
       afterCommands,
       layerCommands,
+      layerCheck: 'erase',
       layerSkippedMessage: 'Cannot erase on this layer.',
       skipSelectionKey: options && options.skipSelectionKey ? options.skipSelectionKey : '',
       skippedMessage: 'No active selection. Erase skipped.',

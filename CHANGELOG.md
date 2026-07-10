@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Allowed Fill to recolor existing pixels when transparent pixels are locked by preserving transparency only for locked-transparency layers.
 - Added a collapsible Opacity / Blend tab so detailed fill controls can stay tucked away during daily drawing.
 - Removed the Advanced and Developer tabs from the panel for a cleaner daily drawing UI.
 - Removed panel bindings for the hidden manual command and diagnostics controls.

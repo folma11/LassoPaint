@@ -7,18 +7,30 @@
     const deselect = Boolean(options && options.deselect);
     const opacity = options && options.opacity ? options.opacity : 100;
     const blendMode = options && options.blendMode ? options.blendMode : 'normal';
+    const layerCommands = !newLayer && batchPlayModule && typeof batchPlayModule.buildGetTargetLayerCommand === 'function'
+      ? batchPlayModule.buildGetTargetLayerCommand()
+      : [];
 
     if (newLayer && batchPlayModule && typeof batchPlayModule.buildCreateNewPixelLayerCommand === 'function') {
       commands.push(...batchPlayModule.buildCreateNewPixelLayerCommand());
     }
 
-    if (batchPlayModule && typeof batchPlayModule.buildFillSelectionCommand === 'function') {
-      commands.push(...batchPlayModule.buildFillSelectionCommand(opacity, blendMode));
-    }
+    const buildCommands = (validation) => {
+      const fillCommands = commands.slice();
+      const preserveTransparency = Boolean(validation && validation.preserveTransparency);
 
-    if (deselect && batchPlayModule && typeof batchPlayModule.buildDeselectSelectionCommand === 'function') {
-      commands.push(...batchPlayModule.buildDeselectSelectionCommand());
-    }
+      if (batchPlayModule && typeof batchPlayModule.buildFillSelectionCommand === 'function') {
+        fillCommands.push(...batchPlayModule.buildFillSelectionCommand(opacity, blendMode, {
+          preserveTransparency
+        }));
+      }
+
+      if (deselect && batchPlayModule && typeof batchPlayModule.buildDeselectSelectionCommand === 'function') {
+        fillCommands.push(...batchPlayModule.buildDeselectSelectionCommand());
+      }
+
+      return fillCommands;
+    };
 
     const actionName = [newLayer ? 'New Layer' : null, 'Fill', deselect ? 'Deselect' : null].filter(Boolean).join(' + ') || 'Fill';
     const selectionCommands = batchPlayModule && typeof batchPlayModule.buildGetSelectionBoundsCommand === 'function'
@@ -29,7 +41,8 @@
       return { success: false, message: 'No active selection. Fill skipped.' };
     }
 
-    return modalModule.runSelectionGuardedBatchPlay(commands, actionName, selectionCommands, {
+    return modalModule.runSelectionGuardedBatchPlay(buildCommands, actionName, selectionCommands, {
+      layerCommands,
       skipSelectionKey: options && options.skipSelectionKey ? options.skipSelectionKey : ''
     });
   }
