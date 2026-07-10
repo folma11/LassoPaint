@@ -9,7 +9,7 @@
 </p>
 
 <p align="center">
-A lightweight Adobe Photoshop UXP plugin that streamlines the selection fill workflow.
+A lightweight Adobe Photoshop UXP plugin that streamlines selection fill and erase workflows.
 </p>
 
 <p align="center">
@@ -30,23 +30,23 @@ A lightweight Adobe Photoshop UXP plugin that streamlines the selection fill wor
 
 Repetitive Photoshop actions interrupt creative flow.
 
-Lasso Paint combines common fill steps into one click while staying lightweight, native, and focused on the selection workflow.
+Lasso Paint combines repetitive fill, erase, layer, and deselect steps into fast automatic actions while staying lightweight, native, and focused on the selection workflow.
 
 No complicated setup.
 
 No unnecessary features.
 
-Just a faster fill workflow.
+Just a faster selection workflow.
 
 ## Features
 
-### One-click Fill
+### Automatic Fill
 
-Fill the current selection with one focused command.
+Fill new selections with the foreground color as soon as they are created.
 
 ### Auto Mode
 
-Fill or erase to transparency automatically after a selection is created.
+Choose Fill, Erase, or OFF for the current drawing flow.
 
 ### New Layer before Fill
 
@@ -72,6 +72,14 @@ Switch quickly between Base, Shadow, Highlight, and Overlay fill settings.
 
 Choose Normal, Multiply, Screen, or Overlay when filling selections.
 
+### Collapsible Fill Controls
+
+Keep opacity and blend settings tucked away until you need them.
+
+### Spring-loaded Eyedropper Workflow
+
+Use Photoshop's spring-loaded **I** shortcut to sample colors without leaving the Lasso flow.
+
 ### Native Photoshop Experience
 
 Work from a lightweight UXP panel that fits naturally into Photoshop.
@@ -84,7 +92,7 @@ Work from a lightweight UXP panel that fits naturally into Photoshop.
   <img src="assets/screenshots/main-panel.png" width="520" alt="Lasso Paint main panel">
 </p>
 
-The main panel keeps the everyday fill workflow close at hand.
+The main panel keeps Auto Mode, presets, fill controls, and workflow toggles close at hand.
 
 ## Installation
 
@@ -97,9 +105,10 @@ The main panel keeps the everyday fill workflow close at hand.
 
 ## Usage
 
-1. Create a selection.
-2. Choose **Fill**, **Erase**, or **OFF**.
-3. Continue drawing.
+1. Choose **Fill**, **Erase**, or **OFF**.
+2. Create a selection.
+3. Lasso Paint runs the selected action automatically.
+4. Continue drawing.
 
 Optional settings:
 
@@ -109,8 +118,11 @@ Optional settings:
 - **Preset** applies common fill settings for base color, shadow, highlight, and overlay work.
 - **Opacity** controls fill strength in 20% steps.
 - **Blend Mode** switches fill behavior between Normal, Multiply, Screen, and Overlay.
+- **Opacity / Blend** can be collapsed for a cleaner daily drawing panel.
 - **New Layer before Fill** creates a new layer before filling in Fill mode.
 - **Deselect after Action** clears the selection after filling or erasing.
+
+Presets, opacity, and blend mode affect Fill only. Erase always clears pixels to transparency.
 
 When no active selection is found, Lasso Paint skips the workflow and leaves the layer unchanged.
 
@@ -132,13 +144,14 @@ For pen workflows, assigning **I** to a pen button can make color picking faster
 
 - Stable fill workflow
 - Auto Mode
+- Fill Presets
+- Opacity and Blend controls
 - Native Photoshop UI
 - Selection Guard
 - Modern dark UI
 
 ### Coming Next
 
-- Workflow presets
 - Performance improvements
 - Additional productivity tools
 

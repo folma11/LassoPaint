@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Updated README wording to match the current Auto Mode, preset, collapsible fill controls, and simplified panel UI.
 - Grouped Lasso Paint fill, erase, new layer, and deselect steps into a single plugin history state when Photoshop supports history suspension.
 - Added README guidance for Photoshop's spring-loaded Eyedropper workflow while using Lasso Paint.
 - Allowed Fill to recolor existing pixels when transparent pixels are locked by preserving transparency only for locked-transparency layers.
