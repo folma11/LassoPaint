@@ -36,8 +36,10 @@
 
     try {
       console.info(`[LassoPaint] Running ${actionName} via executeAsModal.`);
-      await photoshop.core.executeAsModal(async () => {
-        await batchPlay(commands, { synchronous: true });
+      await photoshop.core.executeAsModal(async (executionContext) => {
+        await runWithSuspendedHistory(executionContext, photoshop, actionName, async () => {
+          await batchPlay(commands, { synchronous: true });
+        });
       }, { commandName: actionName });
 
       return { success: true, message: `${actionName} completed.` };
@@ -47,6 +49,56 @@
         success: false,
         message: error && error.message ? error.message : `${actionName} failed.`
       };
+    }
+  }
+
+  function getActiveDocumentId(photoshop) {
+    const document = photoshop &&
+      photoshop.app &&
+      photoshop.app.activeDocument
+      ? photoshop.app.activeDocument
+      : null;
+
+    return document && document.id !== undefined ? document.id : null;
+  }
+
+  async function runWithSuspendedHistory(executionContext, photoshop, actionName, callback) {
+    const hostControl = executionContext && executionContext.hostControl;
+    const documentID = getActiveDocumentId(photoshop);
+    const canSuspendHistory = hostControl &&
+      typeof hostControl.suspendHistory === 'function' &&
+      typeof hostControl.resumeHistory === 'function' &&
+      documentID !== null;
+
+    if (!canSuspendHistory) {
+      await callback();
+      return;
+    }
+
+    let suspensionID = null;
+    try {
+      suspensionID = await hostControl.suspendHistory({
+        documentID,
+        name: actionName
+      });
+
+      await callback();
+    } catch (error) {
+      if (suspensionID === null) {
+        console.warn(`[LassoPaint] Unable to suspend history for ${actionName}.`, error);
+        await callback();
+        return;
+      }
+
+      throw error;
+    } finally {
+      if (suspensionID !== null) {
+        try {
+          await hostControl.resumeHistory(suspensionID);
+        } catch (error) {
+          console.warn(`[LassoPaint] Unable to resume history for ${actionName}.`, error);
+        }
+      }
     }
   }
 
@@ -229,7 +281,7 @@
       let validation = { hasSelection: false, layerSkipped: false, selectionKey: '' };
 
       console.info(`[LassoPaint] Checking active selection before ${actionName}.`);
-      await photoshop.core.executeAsModal(async () => {
+      await photoshop.core.executeAsModal(async (executionContext) => {
         validation = await validateSelectionAndLayer(batchPlay, actionName, selectionCommands, options);
         if (!validation.hasSelection) {
           return;
@@ -240,7 +292,9 @@
           return;
         }
 
-        await batchPlay(commandsToRun, { synchronous: true });
+        await runWithSuspendedHistory(executionContext, photoshop, actionName, async () => {
+          await batchPlay(commandsToRun, { synchronous: true });
+        });
         fillCompleted = true;
       }, { commandName: actionName });
 
@@ -280,7 +334,7 @@
       let validation = { hasSelection: false, layerSkipped: false, selectionKey: '' };
 
       console.info(`[LassoPaint] Checking active selection before ${actionName}.`);
-      await photoshop.core.executeAsModal(async () => {
+      await photoshop.core.executeAsModal(async (executionContext) => {
         validation = await validateSelectionAndLayer(batchPlay, actionName, selectionCommands, options);
         if (!validation.hasSelection) {
           return;
@@ -300,15 +354,17 @@
         }
 
         try {
-          await activeLayer.clear();
+          await runWithSuspendedHistory(executionContext, photoshop, actionName, async () => {
+            await activeLayer.clear();
+
+            if (options && Array.isArray(options.afterCommands) && options.afterCommands.length) {
+              await batchPlay(options.afterCommands, { synchronous: true });
+            }
+          });
         } catch (error) {
           actionFailed = true;
           console.warn('[LassoPaint] Photoshop DOM layer.clear failed.', error);
           return;
-        }
-
-        if (options && Array.isArray(options.afterCommands) && options.afterCommands.length) {
-          await batchPlay(options.afterCommands, { synchronous: true });
         }
 
         actionCompleted = true;

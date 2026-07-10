@@ -114,6 +114,17 @@ Optional settings:
 
 When no active selection is found, Lasso Paint skips the workflow and leaves the layer unchanged.
 
+## Color Picking Workflow
+
+Use Photoshop's spring-loaded tool shortcuts to sample color without leaving the Lasso workflow.
+
+1. Keep the Lasso tool active.
+2. Hold **I** to temporarily switch to the Eyedropper tool.
+3. Pick a foreground color on the canvas.
+4. Release **I** to return to the Lasso tool.
+5. Continue selecting and filling with Lasso Paint.
+
+For pen workflows, assigning **I** to a pen button can make color picking faster while keeping the canvas-focused flow.
 
 ## Roadmap
 
