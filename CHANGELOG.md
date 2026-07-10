@@ -2,7 +2,11 @@
 
 ## Unreleased
 
+## 1.0.0 - 2026-07-10
+
+- Promoted Lasso Paint to the first stable public release.
 - Added README installation guidance for packaged `.ccx` releases.
+- Updated project metadata to version 1.0.0.
 
 ## 0.16.3 - 2026-07-10
 

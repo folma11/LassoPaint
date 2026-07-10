@@ -14,7 +14,7 @@ A lightweight Adobe Photoshop UXP plugin that streamlines selection fill and era
 
 <p align="center">
 
-<img src="https://img.shields.io/badge/version-v0.16.3-blue" alt="Version">
+<img src="https://img.shields.io/badge/version-v1.0.0-blue" alt="Version">
 <img src="https://img.shields.io/badge/license-MIT-green" alt="MIT License">
 <img src="https://img.shields.io/badge/Adobe-Photoshop-31A8FF?logo=adobephotoshop&logoColor=white" alt="Adobe Photoshop">
 <img src="https://img.shields.io/badge/UXP-Plugin-orange?logo=adobe&logoColor=white" alt="UXP Plugin">
