@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+## 1.0.1 - 2026-07-16
+
+- Added Photoshop 26.0 compatibility by using manifest version 4 with a 26.0 minimum host version.
+- Verified the plugin loads and core workflows operate in Photoshop 26.0 and 27.7 on Windows.
+- No Fill, Erase, Auto Mode, or panel UI behavior changes.
+
 ## 1.0.0 - 2026-07-10
 
 - Promoted Lasso Paint to the first stable public release.

@@ -1,12 +1,12 @@
 {
-  "manifestVersion": 5,
+  "manifestVersion": 4,
   "id": "com.lassopaint.plugin",
   "name": "Lasso Paint",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "main": "index.html",
   "host": {
     "app": "PS",
-    "minVersion": "27.7.0"
+    "minVersion": "26.0"
   },
   "entrypoints": [
     {

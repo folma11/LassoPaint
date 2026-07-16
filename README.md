@@ -14,7 +14,7 @@ A lightweight Adobe Photoshop UXP plugin that streamlines selection fill and era
 
 <p align="center">
 
-<img src="https://img.shields.io/badge/version-v1.0.0-blue" alt="Version">
+<img src="https://img.shields.io/badge/version-v1.0.1-blue" alt="Version">
 <img src="https://img.shields.io/badge/license-MIT-green" alt="MIT License">
 <img src="https://img.shields.io/badge/Adobe-Photoshop-31A8FF?logo=adobephotoshop&logoColor=white" alt="Adobe Photoshop">
 <img src="https://img.shields.io/badge/UXP-Plugin-orange?logo=adobe&logoColor=white" alt="UXP Plugin">
@@ -112,6 +112,12 @@ The main panel keeps Auto Mode, presets, fill controls, and workflow toggles clo
 4. Select **Add Plugin**.
 5. Select the folder containing `manifest.json`.
 6. Load the plugin.
+
+### Photoshop Compatibility
+
+Lasso Paint v1.0.1 is tested with Photoshop 26.0 and 27.7 on Windows.
+
+Other Photoshop versions from 26.0 onward may work, but have not been individually verified.
 
 ## Usage
 
