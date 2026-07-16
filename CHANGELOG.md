@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+- Added Selection Brush Tool support for Auto Mode by waiting for the tool-change notification before processing the committed selection.
+- Kept selection bounds validation, duplicate prevention, and the no-polling event-driven workflow intact.
+
 ## 1.0.1 - 2026-07-16
 
 - Added Photoshop 26.0 compatibility by using manifest version 4 with a 26.0 minimum host version.

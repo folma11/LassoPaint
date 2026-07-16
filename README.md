@@ -42,7 +42,7 @@ Just a faster selection workflow.
 
 ### Automatic Fill
 
-Fill new selections with the foreground color as soon as they are created.
+Fill new selections with the foreground color as soon as they are created. When using Photoshop's Selection Brush Tool, Lasso Paint waits until you switch to another tool so the final selection is committed first.
 
 ### Auto Mode
 
@@ -125,6 +125,8 @@ Other Photoshop versions from 26.0 onward may work, but have not been individual
 2. Create a selection.
 3. Lasso Paint runs the selected action automatically.
 4. Continue drawing.
+
+When using the Selection Brush Tool, paint the selection normally and switch to another Photoshop tool when finished. Lasso Paint waits for that tool change, confirms the committed selection, and then runs the selected Fill or Erase action.
 
 Optional settings:
 

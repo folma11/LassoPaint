@@ -8,7 +8,7 @@
   const DeselectCommand = global.LassoPaintDeselectCommand;
   const LayerCommand = global.LassoPaintLayerCommand;
 
-  const AUTO_FILL_EVENTS = ['set'];
+  const AUTO_FILL_EVENTS = ['set', 'select'];
 
   let eventDiagnosticsEnabled = false;
   let eventDiagnosticsHandle = null;
@@ -17,7 +17,9 @@
   let autoModeListener = null;
   let autoModeInProgress = false;
   let pendingAutoModeEvent = null;
+  let pendingToolChangeTimer = null;
   let lastAutoModeSelectionKey = '';
+  let selectionBrushToolState = null;
 
   function getPhotoshopApi() {
     if (typeof require === 'function') {
@@ -59,7 +61,108 @@
   }
 
   function normalizeEventName(event) {
+    if (typeof event === 'string') {
+      return event;
+    }
+
     return event && (event.eventName || event.type || event._event || event.name) || '';
+  }
+
+  function getNotificationText(event, descriptor) {
+    const payload = descriptor || event && event.descriptor || event;
+
+    try {
+      return JSON.stringify(payload).toLowerCase();
+    } catch (error) {
+      return '';
+    }
+  }
+
+  function normalizeToolId(toolId) {
+    return String(toolId || '').replace(/[^a-z0-9]/gi, '').toLowerCase();
+  }
+
+  function isSelectionBrushToolId(toolId) {
+    const normalizedToolId = normalizeToolId(toolId);
+    return normalizedToolId === 'selectionbrushtool' || normalizedToolId === 'selectionbrush';
+  }
+
+  function getCurrentToolId() {
+    const photoshop = getPhotoshopApi();
+
+    try {
+      return photoshop && photoshop.app && photoshop.app.currentTool
+        ? photoshop.app.currentTool.id || ''
+        : '';
+    } catch (error) {
+      console.warn('[LassoPaint] Unable to read the current Photoshop tool.', error);
+      return '';
+    }
+  }
+
+  function isSelectionBrushActive() {
+    const currentToolId = getCurrentToolId();
+
+    if (currentToolId) {
+      return isSelectionBrushToolId(currentToolId);
+    }
+
+    return selectionBrushToolState;
+  }
+
+  function isToolSelectionNotification(event, descriptor) {
+    if (normalizeEventName(event) !== 'select') {
+      return false;
+    }
+
+    return getNotificationText(event, descriptor).indexOf('tool') !== -1;
+  }
+
+  function notificationSelectsSelectionBrush(event, descriptor) {
+    const text = getNotificationText(event, descriptor);
+
+    if (text.indexOf('selectionbrushtool') !== -1 || text.indexOf('selectionbrush') !== -1) {
+      return true;
+    }
+
+    if (text.indexOf('tool') !== -1) {
+      return false;
+    }
+
+    const currentToolId = getCurrentToolId();
+    return currentToolId ? isSelectionBrushToolId(currentToolId) : false;
+  }
+
+  function cancelPendingToolChange() {
+    if (pendingToolChangeTimer !== null) {
+      clearTimeout(pendingToolChangeTimer);
+      pendingToolChangeTimer = null;
+    }
+  }
+
+  function schedulePendingAutoModeAfterToolChange() {
+    if (pendingToolChangeTimer !== null) {
+      return;
+    }
+
+    pendingToolChangeTimer = setTimeout(() => {
+      pendingToolChangeTimer = null;
+
+      if (autoMode === 'off' || selectionBrushToolState === true) {
+        return;
+      }
+
+      const nextEvent = pendingAutoModeEvent || {
+        event: 'set',
+        descriptor: {
+          selection: {
+            source: 'selectionBrushTool'
+          }
+        }
+      };
+      pendingAutoModeEvent = null;
+      runAutoModeFromEvent(nextEvent.event, nextEvent.descriptor, { fromToolChange: true });
+    }, 0);
   }
 
   function isSelectionNotification(event, descriptor) {
@@ -88,8 +191,14 @@
     };
   }
 
-  async function runAutoModeFromEvent(event, descriptor) {
+  async function runAutoModeFromEvent(event, descriptor, options) {
     if (autoMode === 'off' || !isSelectionNotification(event, descriptor)) {
+      return;
+    }
+
+    if (!(options && options.fromToolChange) && isSelectionBrushActive() === true) {
+      pendingAutoModeEvent = { event, descriptor };
+      console.info('[LassoPaint] Selection Brush update queued until tool change.');
       return;
     }
 
@@ -148,6 +257,28 @@
     }
   }
 
+  function handleAutoModeNotification(event, descriptor) {
+    if (isToolSelectionNotification(event, descriptor)) {
+      const wasSelectionBrush = selectionBrushToolState === true || isSelectionBrushActive() === true;
+      const selectsSelectionBrush = notificationSelectsSelectionBrush(event, descriptor);
+      selectionBrushToolState = selectsSelectionBrush;
+
+      if (selectsSelectionBrush) {
+        cancelPendingToolChange();
+        pendingAutoModeEvent = null;
+        lastAutoModeSelectionKey = '';
+        return;
+      }
+
+      if (wasSelectionBrush && autoMode !== 'off') {
+        schedulePendingAutoModeAfterToolChange();
+      }
+      return;
+    }
+
+    runAutoModeFromEvent(event, descriptor);
+  }
+
   async function setAutoMode(mode, options) {
     const photoshop = getPhotoshopApi();
     const action = photoshop && photoshop.action;
@@ -170,7 +301,7 @@
 
     if (nextMode !== 'off' && autoMode === 'off') {
       autoModeListener = (event, descriptor) => {
-        runAutoModeFromEvent(event, descriptor);
+        handleAutoModeNotification(event, descriptor);
       };
 
       try {
@@ -198,11 +329,14 @@
       autoMode = 'off';
       autoModeListener = null;
       autoModeInProgress = false;
+      cancelPendingToolChange();
       pendingAutoModeEvent = null;
       return { success: true, message: 'Auto Mode off.' };
     }
 
     autoMode = nextMode;
+    selectionBrushToolState = isSelectionBrushActive();
+    cancelPendingToolChange();
     pendingAutoModeEvent = null;
     lastAutoModeSelectionKey = '';
     return { success: true, message: nextMode === 'erase' ? 'Auto Erase enabled.' : 'Auto Fill enabled.' };
