@@ -8,7 +8,8 @@
   const DeselectCommand = global.LassoPaintDeselectCommand;
   const LayerCommand = global.LassoPaintLayerCommand;
 
-  const AUTO_FILL_EVENTS = ['set', 'select'];
+  const AUTO_FILL_EVENTS = ['set', 'select', 'addTo', 'subtractFrom'];
+  const AUTO_MODE_DUPLICATE_COOLDOWN_MS = 200;
 
   let eventDiagnosticsEnabled = false;
   let eventDiagnosticsHandle = null;
@@ -19,6 +20,9 @@
   let pendingAutoModeEvent = null;
   let pendingToolChangeTimer = null;
   let lastAutoModeSelectionKey = '';
+  let lastAutoModeNotificationKey = '';
+  let lastAutoModeNotificationAt = 0;
+  let activeAutoModeNotificationKey = '';
   let selectionBrushToolState = null;
 
   function getPhotoshopApi() {
@@ -160,23 +164,57 @@
           }
         }
       };
+      const isSyntheticSelection = !pendingAutoModeEvent;
       pendingAutoModeEvent = null;
-      runAutoModeFromEvent(nextEvent.event, nextEvent.descriptor, { fromToolChange: true });
+      runAutoModeFromEvent(nextEvent.event, nextEvent.descriptor, {
+        fromToolChange: true,
+        forceNewSelection: isSyntheticSelection
+      });
     }, 0);
   }
 
   function isSelectionNotification(event, descriptor) {
     const eventName = normalizeEventName(event);
-    const payload = descriptor || event && event.descriptor || event;
+    const notificationText = getNotificationText(event, descriptor);
+    const isSelectionChannelNotification =
+      notificationText.indexOf('"_ref":"channel"') !== -1 ||
+      notificationText.indexOf('"_property":"selection"') !== -1;
 
-    if (eventName && eventName !== 'set') {
+    if (
+      eventName === 'select' &&
+      isToolSelectionNotification(event, descriptor) &&
+      !isSelectionChannelNotification
+    ) {
       return false;
     }
 
-    try {
-      return JSON.stringify(payload).indexOf('selection') !== -1;
-    } catch (error) {
+    if (
+      eventName &&
+      eventName !== 'set' &&
+      eventName !== 'select' &&
+      eventName !== 'addTo' &&
+      eventName !== 'subtractFrom'
+    ) {
       return false;
+    }
+
+    const isSelectionModeEvent = eventName === 'addTo' || eventName === 'subtractFrom';
+    return notificationText.indexOf('selection') !== -1 || isSelectionChannelNotification || isSelectionModeEvent;
+  }
+
+  function getSelectionNotificationKey(event, descriptor) {
+    if (!isSelectionNotification(event, descriptor)) {
+      return '';
+    }
+
+    const payload = descriptor || event && event.descriptor || event;
+
+    try {
+      const serialized = JSON.stringify(payload);
+      const eventName = normalizeEventName(event) || 'selection';
+      return serialized ? `${eventName}:${serialized}` : '';
+    } catch (error) {
+      return '';
     }
   }
 
@@ -196,32 +234,58 @@
       return;
     }
 
+    const notificationKey = getSelectionNotificationKey(event, descriptor);
+    const now = Date.now();
+    const isRecentDuplicate = Boolean(
+      notificationKey &&
+      notificationKey === lastAutoModeNotificationKey &&
+      now - lastAutoModeNotificationAt < AUTO_MODE_DUPLICATE_COOLDOWN_MS
+    );
+
+    if (isRecentDuplicate) {
+      return;
+    }
+
     if (!(options && options.fromToolChange) && isSelectionBrushActive() === true) {
-      pendingAutoModeEvent = { event, descriptor };
+      pendingAutoModeEvent = { event, descriptor, notificationKey };
       console.info('[LassoPaint] Selection Brush update queued until tool change.');
       return;
     }
 
     if (autoModeInProgress) {
-      pendingAutoModeEvent = { event, descriptor };
+      if (
+        notificationKey &&
+        (notificationKey === activeAutoModeNotificationKey ||
+          pendingAutoModeEvent && notificationKey === pendingAutoModeEvent.notificationKey)
+      ) {
+        return;
+      }
+
+      pendingAutoModeEvent = { event, descriptor, notificationKey };
       console.info('[LassoPaint] Auto Mode queued latest selection event.');
       return;
     }
 
     autoModeInProgress = true;
+    activeAutoModeNotificationKey = notificationKey;
+    const skipSelectionKey = options && options.forceNewSelection
+      ? ''
+      : notificationKey
+        ? ''
+        : lastAutoModeSelectionKey;
 
     try {
       const result = autoMode === 'erase'
         ? await runConfiguredErase({
           deselect: autoModeOptions.deselect,
-          skipSelectionKey: lastAutoModeSelectionKey
+          skipSelectionKey
         })
         : await runConfiguredFill({
           newLayer: autoModeOptions.newLayer,
           deselect: autoModeOptions.deselect,
           opacity: autoModeOptions.opacity,
           blendMode: autoModeOptions.blendMode,
-          skipSelectionKey: lastAutoModeSelectionKey
+          skipSelectionKey
         });
 
       if (autoMode === 'off') {
@@ -230,6 +294,8 @@
 
       if (result && result.success) {
         lastAutoModeSelectionKey = result.selectionKey || lastAutoModeSelectionKey;
+        lastAutoModeNotificationKey = notificationKey || lastAutoModeNotificationKey;
+        lastAutoModeNotificationAt = notificationKey ? Date.now() : 0;
         setStatus(autoMode === 'erase' ? 'Auto Erase completed.' : 'Auto Fill completed.', false);
         console.info(`[LassoPaint] Auto ${autoMode} completed.`);
       } else if (
@@ -248,6 +314,7 @@
       console.error('[LassoPaint] Auto Mode failed.', error);
     } finally {
       autoModeInProgress = false;
+      activeAutoModeNotificationKey = '';
 
       if (autoMode !== 'off' && pendingAutoModeEvent) {
         const nextEvent = pendingAutoModeEvent;
@@ -267,6 +334,8 @@
         cancelPendingToolChange();
         pendingAutoModeEvent = null;
         lastAutoModeSelectionKey = '';
+        lastAutoModeNotificationKey = '';
+        lastAutoModeNotificationAt = 0;
         return;
       }
 
@@ -331,6 +400,9 @@
       autoModeInProgress = false;
       cancelPendingToolChange();
       pendingAutoModeEvent = null;
+      lastAutoModeNotificationKey = '';
+      lastAutoModeNotificationAt = 0;
+      activeAutoModeNotificationKey = '';
       return { success: true, message: 'Auto Mode off.' };
     }
 
@@ -339,6 +411,9 @@
     cancelPendingToolChange();
     pendingAutoModeEvent = null;
     lastAutoModeSelectionKey = '';
+    lastAutoModeNotificationKey = '';
+    lastAutoModeNotificationAt = 0;
+    activeAutoModeNotificationKey = '';
     return { success: true, message: nextMode === 'erase' ? 'Auto Erase enabled.' : 'Auto Fill enabled.' };
   }
 

@@ -4,6 +4,8 @@
 
 - Added Selection Brush Tool support for Auto Mode by waiting for the tool-change notification before processing the committed selection.
 - Kept selection bounds validation, duplicate prevention, and the no-polling event-driven workflow intact.
+- Updated Auto Mode duplicate detection so lasso additions and subtractions can run even when the outer selection bounds stay unchanged.
+- Subscribed Auto Mode to Photoshop's `addTo` and `subtractFrom` selection action notifications.
 
 ## 1.0.1 - 2026-07-16
 
